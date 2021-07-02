@@ -172,8 +172,8 @@ appuser@someinternalhost:~$
 
 ## Подключение к bastion и someinternalhost
 
-bastion_IP = 178.154.231.92
-someinternalhost_IP = 10.128.0.12
+`bastion_IP = 178.154.231.92`
+`someinternalhost_IP = 10.128.0.12`
 
 ## Дополнительное задание 2 VPN с сертификатом
 
@@ -183,3 +183,15 @@ someinternalhost_IP = 10.128.0.12
 После настройки certbot проверяем, что у нас работает безопастное подключение в браузере https://178-154-231-92.sslip.io/#
 
 В настройках pritunl vpn сервера указываем Lets Encrypt Domain: *178-154-231-92.sslip.io*
+
+
+# Домашнее задание №4 Деплой тестового приложения.
+
+## Создание новой ветки cloud-testapp
+
+выполним команду *git checkout -b cloud-testapp*
+
+## параметры для автоматической проверки домашнего задания
+
+testapp_IP = 35.198.167.16
+testapp_port = 9292
