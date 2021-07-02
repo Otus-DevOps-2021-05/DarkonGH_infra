@@ -172,8 +172,8 @@ appuser@someinternalhost:~$
 
 ## Подключение к bastion и someinternalhost
 
-`bastion_IP = 178.154.231.92`
-`someinternalhost_IP = 10.128.0.12`
+    bastion_IP = 178.154.231.92
+    someinternalhost_IP = 10.128.0.12
 
 ## Дополнительное задание 2 VPN с сертификатом
 
@@ -193,5 +193,5 @@ appuser@someinternalhost:~$
 
 ## параметры для автоматической проверки домашнего задания
 
-testapp_IP = 35.198.167.16
-testapp_port = 9292
+    testapp_IP = 35.198.167.16
+    testapp_port = 9292
