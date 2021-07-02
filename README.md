@@ -100,7 +100,7 @@ appuser@someinternalhost:~$ uname -a
 Linux someinternalhost 4.4.0-142-generic #168-Ubuntu SMP Wed Jan 16 21:00:45 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
 appuser@someinternalhost:~$
 
-Бонусом!
+Бонусом:
 Выполняем еще одно перенаправление с локальной рабочей машины:
 *PS C:\WINDOWS\system32> ssh  -fNv -A appuser@178.154.231.92 -L 22022:localhost:22022 178.154.231.92*
 После этого можно подключаться локально на localhost:22022, попадая сразу на someinternalhost:
