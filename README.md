@@ -175,10 +175,6 @@ appuser@someinternalhost:~$
 bastion_IP = 178.154.231.92
 someinternalhost_IP = 10.128.0.12
 
-user = test
-key = 6214157507237678334670591556762
-profile for connect = cloud-bastion.ovpn
-
 ## Дополнительное задание 2 VPN с сертификатом
 
 Для создания подписанного сертификата при помощи сервиса Let's Encrypt используем доменное имя на основе IP адреса, сервиса sslip.io:
