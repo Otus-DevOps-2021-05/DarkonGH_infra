@@ -170,9 +170,9 @@ Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
  * Support:        https://ubuntu.com/advantage
 appuser@someinternalhost:~$
 
-bastion_IP = 178.154.231.92
-someinternalhost_IP = 10.128.0.12
+## Подключение к bastion и someinternalhost
 
+bastion_IP = 178.154.231.92 someinternalhost_IP = 10.128.0.12
 
 ## Дополнительное задание 2 VPN с сертификатом
 
