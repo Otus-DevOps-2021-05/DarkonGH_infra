@@ -199,6 +199,6 @@ appuser@someinternalhost:~$
 
 выполним команду *git checkout -b cloud-testapp*
 
-##  Изучение написаниея Bash скриптов
+##  Изучение написания Bash скриптов
 
-Полезная статья для понимания https://habr.com/en/company/ruvds/blog/325522/
+Полезная статья для понимания bash скриптов https://habr.com/en/company/ruvds/blog/325522/
