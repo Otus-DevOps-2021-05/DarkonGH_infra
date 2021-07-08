@@ -9,11 +9,11 @@ users:
       - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDYhWFZwgxvYBDpiCuYuV2++5ailRPF+ZplpLauUv7lmoEJFbbks2HmzNY0SDRnsEVvC+zhsceeoIa7ee9Mi4R5Wr8s3xmM+b0Mg9KtQwVtXMHSBHL6ouCWcSGsKI7G5kR6PrLtq5K1ezCwCnjArLzErupHasFCDkoEvtFLEGMbBtcKGMpKvqV/YYHuHXXgFQdg0UKQ899DYZdgYlENeRbOcsSHMRWErXohdv2N/Txl0si3V9Hn6FE3/QuxxEzzHIgZwhd4weX/3Ara31Q/yIxOIx6ETkJMh1I+/zxrG0/Z6xzAiv4ngDkcSJAddjws/jl8ryh2MeNvT+3mS6H7TSFhdibogO1BsrAFAmCNVtNldixZguMtxrmp2K9A8fR1fL31YcKkZfTsJGBbxIVMccY7GHC1pWfZms7jdO9FmlgTS9U5DM5pkMbOtt7lgW7PmRF3aW5HM4ulzfwOiFil8dAefxevvPBx3fVRmkAVtQGZYu5kiIU45ZKJ63SbVovoZqE= appuser"
 
 runcmd:
-  - wget https://raw.githubusercontent.com/Otus-DevOps-2021-05/DarkonGH_infra/install_ruby.sh
+  - wget https://raw.githubusercontent.com/Otus-DevOps-2021-05/DarkonGH_infra/cloud-testapp/install_ruby.sh
   - bash install_ruby.sh
 
-  - wget https://raw.githubusercontent.com/Otus-DevOps-2021-05/DarkonGH_infra/install_mongodb.sh
+  - wget https://raw.githubusercontent.com/Otus-DevOps-2021-05/DarkonGH_infra/cloud-testapp/install_mongodb.sh
   - bash install_mongodb.sh
 
-  - wget https://raw.githubusercontent.com/Otus-DevOps-2021-05/DarkonGH_infra/deploy.sh
+  - wget https://raw.githubusercontent.com/Otus-DevOps-2021-05/DarkonGH_infra/cloud-testapp/deploy.sh
   - bash deploy.sh
