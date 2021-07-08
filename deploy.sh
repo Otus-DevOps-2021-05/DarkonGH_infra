@@ -5,7 +5,7 @@ sudo apt install -y git
 echo "The home dir is:" $HOME
 if cd ~
 then
-  if git clone -b monolith https://github.com/express42/reddit.git && [ -d reddit]
+  if git clone -b monolith https://github.com/express42/reddit.git && [ -d ~/reddit ]
   then
     if cd reddit && bundle install
       then

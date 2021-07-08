@@ -1,10 +1,15 @@
 # DarkonGH_infra
 DarkonGH Infra repository
 
-# Домашнее задание №3 *Знакомство с облачной инфраструктурой. Yandex.Cloud*
+# Блок проверки ДЗ
 
 bastion_IP = 178.154.231.92
 someinternalhost_IP = 10.128.0.12
+
+testapp_IP = 178.154.240.105
+testapp_port = 9292
+
+# Домашнее задание №3 *Знакомство с облачной инфраструктурой. Yandex.Cloud*
 
 ## Самостоятельное задание 1 ssh
 
