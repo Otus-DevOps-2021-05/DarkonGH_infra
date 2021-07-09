@@ -207,3 +207,16 @@ appuser@someinternalhost:~$
 ##  Изучение написания Bash скриптов
 
 Полезная статья для понимания bash скриптов https://habr.com/en/company/ruvds/blog/325522/
+
+## Добавление скрипта деплоя приложения после создания инстанса
+
+Дополнительный ключ *--metadata-from-file user-data=metadata.yaml*, который позволяет выполнять необходимые действия после создания инстанса.
+
+> yc compute instance create \
+ --name reddit-app \
+ --hostname reddit-app \
+ --memory=4 \
+ --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1604-lts,size=10GB \
+ --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 \
+ --metadata-from-file user-data=metadata.yaml \
+ --metadata serial-port-enable=1
