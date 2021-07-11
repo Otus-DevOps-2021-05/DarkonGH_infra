@@ -1,10 +1,15 @@
 # DarkonGH_infra
 DarkonGH Infra repository
 
-# Домашнее задание №3 *Знакомство с облачной инфраструктурой. Yandex.Cloud*
+# Блок проверки ДЗ
 
 bastion_IP = 178.154.231.92
 someinternalhost_IP = 10.128.0.12
+
+testapp_IP = 178.154.240.105
+testapp_port = 9292
+
+# Домашнее задание №3 *Знакомство с облачной инфраструктурой. Yandex.Cloud*
 
 ## Самостоятельное задание 1 ssh
 
@@ -190,11 +195,28 @@ appuser@someinternalhost:~$
 
 # Домашнее задание №4 Деплой тестового приложения.
 
+## параметры для автоматической проверки домашнего задания
+
+    testapp_IP = 178.154.240.105
+    testapp_port = 9292
+
 ## Создание новой ветки cloud-testapp
 
 выполним команду *git checkout -b cloud-testapp*
 
-## параметры для автоматической проверки домашнего задания
+##  Изучение написания Bash скриптов
 
-    testapp_IP = 35.198.167.16
-    testapp_port = 9292
+Полезная статья для понимания bash скриптов https://habr.com/en/company/ruvds/blog/325522/
+
+## Добавление скрипта деплоя приложения после создания инстанса
+
+Дополнительный ключ *--metadata-from-file user-data=metadata.yaml*, который позволяет выполнять необходимые действия после создания инстанса.
+
+> yc compute instance create \
+ --name reddit-app \
+ --hostname reddit-app \
+ --memory=4 \
+ --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1604-lts,size=10GB \
+ --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 \
+ --metadata-from-file user-data=metadata.yaml \
+ --metadata serial-port-enable=1
