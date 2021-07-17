@@ -220,3 +220,22 @@ appuser@someinternalhost:~$
  --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 \
  --metadata-from-file user-data=metadata.yaml \
  --metadata serial-port-enable=1
+
+
+# Домашнее задание №5  Сборка образов VM при помощи Packer
+
+## Основное ДЗ Сборка образов VM при помощи Packer
+
+## Задание со * Построение Bake образа
+
+В процессе сделано:
+
+  *  Создан сервисный аккаунт для Packer в Yandex Cloud и делигированы права.
+  *  Создание шаблона для Packer и его настройка (секции билдера и провиженеров)
+  *  Собран образ с предустановленными ruby и mongodb
+  *  Проверка загрузки ВМ из созданного образа. Проверка установки приложения
+  *  Параметризация шаблона, перенос чувствительных данных в переменные variables.json
+
+## Запуск сборки immunable образа
+
+    packer build -var-file=./variables.json ./immutable.json
