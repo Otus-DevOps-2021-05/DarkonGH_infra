@@ -13,7 +13,7 @@
             "folder_id": "{{user `folder_id`}}",
             "zone":      "ru-central1-a",
 
-            "source_image_id": "{{user `image_id`}}",
+            "source_image_family": "ubuntu-1604-lts",
             "image_name": "reddit-base-{{timestamp}}",
             "image_family": "reddit-base",
 
