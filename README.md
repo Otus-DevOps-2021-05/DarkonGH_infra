@@ -23,10 +23,10 @@ testapp_port = 9292
 
 >PS C:\WINDOWS\system32> ssh -A appuser@217.28.231.251
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
-
-> * Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/advantage
+>
+> * Documentation:  <https://help.ubuntu.com>
+> * Management:     <https://landscape.canonical.com>
+> * Support:        <https://ubuntu.com/advantage>
 appuser@bastion:~$
 
 #### Настройка OpenSSH сервера
@@ -45,10 +45,10 @@ appuser@bastion:~$
 
 >appuser@bastion:~$ ssh appuser@localhost -p 22022
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
-
- >* Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/advantage
+>
+> * Documentation:  <https://help.ubuntu.com>
+> * Management:     <https://landscape.canonical.com>
+> * Support:        <https://ubuntu.com/advantage>
 appuser@someinternalhost:~$
 
 Судя по приглашению *appuser@someinternalhost* подключение прошло успешно.
@@ -75,7 +75,7 @@ appuser@bastion:~$ sudo iptables -L -nv
  pkts bytes target     prot opt in     out     source               destination
 
 Изучение документации Yandex Cloud не дает ответа какие порты блокируются и блокируются ли вообще:
-https://cloud.yandex.ru/docs/vpc/concepts/network
+<https://cloud.yandex.ru/docs/vpc/concepts/network>
 >Для виртуальных машин Yandex Compute Cloud и хостов баз данных доступ из интернета и в интернет открыт через публичные IP-адреса.
 
 Вывод: Недостаточно информации для завершения задания
@@ -104,9 +104,9 @@ debug1: Local forwarding listening on :: port 22022.
 >PS C:\WINDOWS\system32> ssh -A appuser@178.154.231.92 -p 22022
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
 >
- >* Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/advantage
+> * Documentation:  <https://help.ubuntu.com>
+> * Management:     <https://landscape.canonical.com>
+> * Support:        <https://ubuntu.com/advantage>
 appuser@someinternalhost:~$ hostname
 someinternalhost
 appuser@someinternalhost:~$ uname -a
@@ -121,9 +121,9 @@ appuser@someinternalhost:~$
 >PS C:\WINDOWS\system32> ssh -A appuser@localhost -p 22022
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
 >
-> * Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/advantage
+> * Documentation:  <https://help.ubuntu.com>
+> * Management:     <https://landscape.canonical.com>
+> * Support:        <https://ubuntu.com/advantage>
 appuser@someinternalhost:~$ hostname
 someinternalhost
 appuser@someinternalhost:~$
@@ -136,15 +136,16 @@ appuser@someinternalhost:~$
 Pseudo-terminal will not be allocated because stdin is not a terminal.
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
 >
- >* Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/advantage
+> * Documentation:  <https://help.ubuntu.com>
+> * Management:     <https://landscape.canonical.com>
+> * Support:        <https://ubuntu.com/advantage>
 hostname
 someinternalhost
 uname -a
 Linux someinternalhost 4.4.0-142-generic #168-Ubuntu SMP Wed Jan 16 21:00:45 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
 
 ### Дополнительное задание 1 ssh
+
 Настройка алиаса  someinternalhost
 
 Создадим файл *~/.ssh/config*
@@ -161,9 +162,9 @@ Linux someinternalhost 4.4.0-142-generic #168-Ubuntu SMP Wed Jan 16 21:00:45 UTC
 >PS C:\WINDOWS\system32> ssh someinternalhost
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
 >
-> * Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/advantage
+> * Documentation:  <https://help.ubuntu.com>
+> * Management:     <https://landscape.canonical.com>
+> * Support:        <https://ubuntu.com/advantage>
 appuser@someinternalhost:~$
 
 Подключение прошло успешно.
@@ -171,16 +172,16 @@ appuser@someinternalhost:~$
 ### Установка VPN-сервера для серверов Yandex.Cloud
 
 Уснатовка vpn будет производится на Ubuntu 18.04.5 LTS, для этого внесем изменения в скрипт **/vpn-bastion/setupvpn.sh**.
-Для внесения изменений в первоначальный скрипт использовалась статья https://www.howtoforge.com/how-to-setup-a-vpn-server-using-pritunl-on-ubuntu-1804/
+Для внесения изменений в первоначальный скрипт использовалась статья <https://www.howtoforge.com/how-to-setup-a-vpn-server-using-pritunl-on-ubuntu-1804/>
 
 После настройки vpn и подключения, проверяем подключение к someinternalhost с 10.128.0.12
 
 >PS C:\WINDOWS\system32> ssh -A appuser@10.128.0.12
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
 >
- >* Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/advantage
+> * Documentation:  <https://help.ubuntu.com>
+> * Management:     <https://landscape.canonical.com>
+> * Support:        <https://ubuntu.com/advantage>
 appuser@someinternalhost:~$
 
 ### Подключение к bastion и someinternalhost
@@ -192,8 +193,8 @@ appuser@someinternalhost:~$
 
 Для создания подписанного сертификата при помощи сервиса Let's Encrypt используем доменное имя на основе IP адреса, сервиса sslip.io:
 *178-154-231-92.sslip.io*
-Далее производим настройку certbot согласно инструкции https://certbot.eff.org/lets-encrypt/ubuntubionic-other
-После настройки certbot проверяем, что у нас работает безопастное подключение в браузере https://178-154-231-92.sslip.io/#
+Далее производим настройку certbot согласно инструкции <https://certbot.eff.org/lets-encrypt/ubuntubionic-other>
+После настройки certbot проверяем, что у нас работает безопастное подключение в браузере <https://178-154-231-92.sslip.io/#>
 
 В настройках pritunl vpn сервера указываем Lets Encrypt Domain: *178-154-231-92.sslip.io*
 
@@ -210,7 +211,7 @@ appuser@someinternalhost:~$
 
 ### Изучение написания Bash скриптов
 
-Полезная статья для понимания bash скриптов https://habr.com/en/company/ruvds/blog/325522/
+Полезная статья для понимания bash скриптов <https://habr.com/en/company/ruvds/blog/325522/>
 
 ### Добавление скрипта деплоя приложения после создания инстанса
 
@@ -271,7 +272,9 @@ appuser@someinternalhost:~$
 
 ### Задание со звездочками
 
-* Настройка балансировщика в Yandex Cloud. Конфигурационный файл lb.tf. При обращении к адресу балансировщика должно открываться задеплоенное приложение. Добавим вывод IP Адреса балансирощика в output переменную:
+* Настройка балансировщика в Yandex Cloud. Конфигурационный файл lb.tf. При обращении к адресу балансировщика должно открываться задеплоенное приложение.
+* Добавление второго инстанса в main.tf
+* Добавим вывод IP Адреса балансирощика в output переменную:
 
 >Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
 >
@@ -282,3 +285,5 @@ appuser@someinternalhost:~$
 >lb_ip_address = tolist([
 > "84.201.134.115",
 >])
+
+* Проблемы конфигурации деплоя приложения на два инстанса - т.к. у нас в развертываемом приложении используется база данных MongoDB на каждом инстанесе, то получается должно быть настроено зеркалирование или репликация данных между БД, для корректной работы приложения с балансировщиком.
