@@ -29,7 +29,7 @@ variable region_id {
   description = "ID of the region that the application load balancer is located at"
   default     = "ru-central1"
 }
-/* variable count_of_instances {
+variable count_of_instances {
   description = "Count of instances"
-  default     = 1
-} */
+  default     = 2
+}

@@ -273,7 +273,7 @@ appuser@someinternalhost:~$
 ### Задание со звездочками
 
 * Настройка балансировщика в Yandex Cloud. Конфигурационный файл lb.tf. При обращении к адресу балансировщика должно открываться задеплоенное приложение.
-* Добавление второго инстанса в main.tf
+* Добавление второго инстанса в *main.tf*
 * Добавим вывод IP Адреса балансирощика в output переменную:
 
 >Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
@@ -286,4 +286,50 @@ appuser@someinternalhost:~$
 > "84.201.134.115",
 >])
 
-* Проблемы конфигурации деплоя приложения на два инстанса - т.к. у нас в развертываемом приложении используется база данных MongoDB на каждом инстанесе, то получается должно быть настроено зеркалирование или репликация данных между БД, для корректной работы приложения с балансировщиком.
+* Проблемы конфигурации деплоя приложения на два инстанса - т.к. у нас в развертываемом приложении используется база данных MongoDB на каждом инстанесе, то получается должно быть настроено зеркалирование или репликация данных между БД, для корректной работы приложения с балансировщиком. А также присутсвует избыточная конфигурация в коде.
+
+* Описание создания идентичных инстантов через парметр count, в *main.tf* добавим:
+
+> resource "yandex_compute_instance" "app" {
+> name  = "reddit-app-${count.index}"
+> count = var.count_of_instances
+
+в *variables.tf* добавим:
+
+> variable count_of_instances {
+> description = "Count of instances"
+> default     = 2
+> }
+
+в *lb.tf* добавим:
+
+> resource "yandex_lb_target_group" "app_lb_target_group" {
+> name      = "app-lb-group"
+> region_id = var.region_id
+>
+    >dynamic "target" {
+     > for_each = yandex_compute_instance.app.*.network_interface.0.ip_address
+     > content {
+         > subnet_id = var.subnet_id
+         > address   = target.value
+       > }
+   > }
+ > }
+
+ в *outputs.tf* добавим:
+
+ > output "external_ip_address_app" {
+ > value = yandex_compute_instance.app[*].network_interface.0.nat_ip_address
+> }
+
+### Полезные ссылки для настройки
+
+-[The count Meta-Argument](<https://www.terraform.io/docs/language/meta-arguments/count.html>)
+-[The for_each Meta-Argument](<https://www.terraform.io/docs/language/meta-arguments/for_each.html>)
+-[dynamic Blocks ](<https://www.terraform.io/docs/language/expressions/dynamic-blocks.html>)
+-[yandex_lb_network_load_balancer](<https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/lb_network_load_balancer>)
+-[yandex_lb_target_group](<https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/lb_target_group>)
+
+Команды просмотра балансировщика нагрузки в YC:
+*yc load-balancer network-load-balancer list*
+*yc load-balancer target-group list*
