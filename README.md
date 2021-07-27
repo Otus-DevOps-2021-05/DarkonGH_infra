@@ -331,5 +331,10 @@ appuser@someinternalhost:~$
 -[yandex_lb_target_group](<https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/lb_target_group>)
 
 Команды просмотра балансировщика нагрузки в YC:
-*yc load-balancer network-load-balancer list*
-*yc load-balancer target-group list*
+
+```
+yc load-balancer network-load-balancer list
+yc load-balancer target-group list
+```
+
+## Домашнее задание №7 Создание Terraform модулей для управления компонентами инфраструктуры
