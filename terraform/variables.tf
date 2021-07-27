@@ -31,5 +31,5 @@ variable region_id {
 }
 variable count_of_instances {
   description = "Count of instances"
-  default     = 2
+  default     = 1
 }
