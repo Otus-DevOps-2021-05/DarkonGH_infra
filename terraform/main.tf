@@ -5,15 +5,7 @@ provider "yandex" {
   zone                     = var.zone
 }
 
-#terraform {
-#  required_providers {
-#    yandex = {
-#      source = "yandex-cloud/yandex"
-#    }
-#  }
-#}
-
-resource "yandex_compute_instance" "app" {
+/* resource "yandex_compute_instance" "app" {
   name  = "reddit-app-${count.index}"
   count = var.count_of_instances
   allow_stopping_for_update = true
@@ -31,10 +23,15 @@ resource "yandex_compute_instance" "app" {
     }
   }
 
+  // network_interface {
+  //   # Указан id подсети default-ru-central1-a
+  //   subnet_id = var.subnet_id
+  //   nat       = true
+  // }
+
   network_interface {
-    # Указан id подсети default-ru-central1-a
-    subnet_id = var.subnet_id
-    nat       = true
+    subnet_id = yandex_vpc_subnet.app-subnet.id
+    nat = true
   }
 
   metadata = {
@@ -58,4 +55,15 @@ resource "yandex_compute_instance" "app" {
   provisioner "remote-exec" {
     script = "files/deploy.sh"
   }
-}
+} */
+
+// resource "yandex_vpc_network" "app-network" {
+//   name = "reddit-app-network"
+// }
+
+// resource "yandex_vpc_subnet" "app-subnet" {
+//   name           = "reddit-app-subnet"
+//   zone           = "ru-central1-a"
+//   network_id     = "${yandex_vpc_network.app-network.id}"
+//   v4_cidr_blocks = ["192.168.10.0/24"]
+// }

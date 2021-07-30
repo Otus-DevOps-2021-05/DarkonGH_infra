@@ -326,7 +326,7 @@ appuser@someinternalhost:~$
 
 -[The count Meta-Argument](<https://www.terraform.io/docs/language/meta-arguments/count.html>)
 -[The for_each Meta-Argument](<https://www.terraform.io/docs/language/meta-arguments/for_each.html>)
--[dynamic Blocks ](<https://www.terraform.io/docs/language/expressions/dynamic-blocks.html>)
+-[dynamic Blocks](<https://www.terraform.io/docs/language/expressions/dynamic-blocks.html>)
 -[yandex_lb_network_load_balancer](<https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/lb_network_load_balancer>)
 -[yandex_lb_target_group](<https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/lb_target_group>)
 
@@ -338,3 +338,159 @@ yc load-balancer target-group list
 ```
 
 ## Домашнее задание №7 Создание Terraform модулей для управления компонентами инфраструктуры
+
+### Создание ресурса IP адрес и пример неявной зависимости
+
+добавим в *main.tf* следующую конрфигурацию:
+
+```
+resource "yandex_vpc_network" "app-network" {
+  name = "reddit-app-network"
+}
+
+resource "yandex_vpc_subnet" "app-subnet" {
+  name           = "reddit-app-subnet"
+  zone           = "ru-central1-a"
+  network_id     = "${yandex_vpc_network.app-network.id}"
+  v4_cidr_blocks = ["192.168.10.0/24"]
+}
+```
+
+ссылаемся на атрибуты ресурса создания IP адреса в конфигурации истанса:
+
+```
+network_interface {
+    subnet_id = yandex_vpc_subnet.app-subnet.id
+    nat = true
+  }
+```
+
+Неявная зависимость видна при созданиии инстанса, terraform apply, сначала создаются ресурсы сети и только потом создается VM:
+
+```
+yandex_vpc_network.app-network: Creating...
+yandex_vpc_network.app-network: Creation complete after 1s [id=enp0g0avvho9sa9h86ve]
+yandex_vpc_subnet.app-subnet: Creating...
+yandex_vpc_subnet.app-subnet: Creation complete after 1s [id=e9br8q7coki7id5s3l36]
+yandex_compute_instance.app[0]: Creating...
+yandex_compute_instance.app[0]: Still creating... [10s elapsed]
+yandex_compute_instance.app[0]: Still creating... [20s elapsed]
+yandex_compute_instance.app[0]: Still creating... [30s elapsed]
+yandex_compute_instance.app[0]: Still creating... [40s elapsed]
+yandex_compute_instance.app[0]: Creation complete after 44s [id=fhmj5vmmjdosu765s8lk]
+
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+external_ip_address_app = [
+  "84.252.128.11",
+]
+```
+
+### Структуризация ресурсов
+
+#### Подготвока образов диска Packer'ом
+
+Вынесем БД на отдельный инстанс VM, подготовим конфигурационный файл *db.json* пакера и сформируем образ с предустановленной БД:
+
+```
+ packer validate -var-file=./variables.json ./db.json
+ packer build -var-file=./variables.json ./db.json
+ ```
+ результат сборки образа db:
+
+```
+==> Builds finished. The artifacts of successful builds are:
+--> yandex: A disk image was created: reddit-db-base-1627600848 (id: fd8f4juab4fmv5p1jbgt) with family name reddit-db-base
+```
+
+Подготовим аналогично шаблон *app.json* для отдельного инстанса VM с предустановленным Ruby
+
+```
+ packer validate -var-file=./variables.json ./app.json
+ packer build -var-file=./variables.json ./app.json
+ ```
+
+результат сборки образа app:
+
+```
+==> Builds finished. The artifacts of successful builds are:
+--> yandex: A disk image was created: reddit-app-base-1627600255 (id: fd85f5u0km4cen9qncrm) with family name reddit-app-base
+```
+
+#### Разнесение конфигурации Терраформа на две VM
+
+Подготовим конфиги *app.tf* и *bd.tf* на основе конфига *main.tf* из предыдущего ДЗ. Создание ресурса сети вынесем в отдельный конфиг *vpc.tf*
+
+Примем изменения - terraform apply, и соберем VM:
+
+```
+yandex_vpc_network.app-network: Creating...
+yandex_vpc_network.app-network: Creation complete after 1s [id=enpanp36tns7g84o67lq]
+yandex_vpc_subnet.app-subnet: Creating...
+yandex_vpc_subnet.app-subnet: Creation complete after 1s [id=e9bpouiaf1ns5gupl466]
+yandex_compute_instance.db: Creating...
+yandex_compute_instance.app: Creating...
+yandex_compute_instance.db: Still creating... [10s elapsed]
+yandex_compute_instance.app: Still creating... [10s elapsed]
+yandex_compute_instance.db: Still creating... [20s elapsed]
+yandex_compute_instance.app: Still creating... [20s elapsed]
+yandex_compute_instance.db: Still creating... [30s elapsed]
+yandex_compute_instance.app: Still creating... [30s elapsed]
+yandex_compute_instance.db: Still creating... [40s elapsed]
+yandex_compute_instance.app: Still creating... [40s elapsed]
+yandex_compute_instance.db: Creation complete after 45s [id=fhmcsgp9mu64gq50458j]
+yandex_compute_instance.app: Creation complete after 47s [id=fhmg9v381og3d7l1flj4]
+
+Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+external_ip_address_app = "178.154.223.73"
+external_ip_address_db = "178.154.221.174"
+```
+
+Проверим, что хост app доступен и на нем установлено Ruby:
+
+```
+darkon@darkonVM:~/DarkonGH_infra/terraform (terraform-2)$ ssh ubuntu@178.154.223.73
+The authenticity of host '178.154.223.73 (178.154.223.73)' can't be established.
+ECDSA key fingerprint is SHA256:9rhZs8SDsnqCvZ38E+AtghDDX8CRs5afod6UWPwXSvg.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '178.154.223.73' (ECDSA) to the list of known hosts.
+Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+ubuntu@fhmg9v381og3d7l1flj4:~$ ruby -v
+ruby 2.3.1p112 (2016-04-26) [x86_64-linux-gnu]
+ubuntu@fhmg9v381og3d7l1flj4:~$
+```
+
+Проверим, что хост db доступен и на нем установлено MongoDb
+
+```
+darkon@darkonVM:~/DarkonGH_infra/terraform (terraform-2)$ ssh ubuntu@178.154.221.174
+The authenticity of host '178.154.221.174 (178.154.221.174)' can't be established.
+ECDSA key fingerprint is SHA256:xo5ls/ERG7DssPNezKl+QAPZOoApSFkpW2rG9EfVxUo.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '178.154.221.174' (ECDSA) to the list of known hosts.
+Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+ubuntu@fhmcsgp9mu64gq50458j:~$ systemctl status mongod
+● mongod.service - MongoDB Database Server
+   Loaded: loaded (/lib/systemd/system/mongod.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2021-07-30 06:55:38 UTC; 6min ago
+     Docs: https://docs.mongodb.org/manual
+ Main PID: 639 (mongod)
+   CGroup: /system.slice/mongod.service
+           └─639 /usr/bin/mongod --config /etc/mongod.conf
+
+Jul 30 06:55:38 fhmcsgp9mu64gq50458j systemd[1]: Started MongoDB Database Server.
+```
