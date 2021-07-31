@@ -637,3 +637,9 @@ commands will detect it and remind you to do so if necessary.
 Повторим тоже самое для prod.
 
 Проверим сборку VM для stage и prod - terraform apply, и удаление terraform destroy.
+
+### Самостоятельное задание
+
+Параметризуем конфигурацию модулей, вынесем в переменные значения cores, core_fraction, memory и имя VM
+
+### Задание со *
