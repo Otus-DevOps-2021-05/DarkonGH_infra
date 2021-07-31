@@ -469,7 +469,7 @@ ruby 2.3.1p112 (2016-04-26) [x86_64-linux-gnu]
 ubuntu@fhmg9v381og3d7l1flj4:~$
 ```
 
-Проверим, что хост db доступен и на нем установлено MongoDb
+Проверим, что хост db доступен и на нем установлено MongoDb:
 
 ```
 darkon@darkonVM:~/DarkonGH_infra/terraform (terraform-2)$ ssh ubuntu@178.154.221.174
@@ -494,3 +494,105 @@ ubuntu@fhmcsgp9mu64gq50458j:~$ systemctl status mongod
 
 Jul 30 06:55:38 fhmcsgp9mu64gq50458j systemd[1]: Started MongoDB Database Server.
 ```
+
+### Модули
+
+Создадим модули app и db на основе написанной ранее конфигурации.
+
+Для использования модулем загрузим их из указанного источника *source* (в нашем случае локальная папка).
+Выполним компнуд для загрузки модулей:
+
+```
+terraform get
+```
+
+Модули будут загружены в директорию .terraform, в которой уже содержится провайдер Yandex Cloud.
+
+```
+darkon@darkonVM:~/DarkonGH_infra/terraform (terraform-2)$ tree .terraform
+.terraform
+├── modules
+│   └── modules.json
+└── providers
+    └── registry.terraform.io
+        └── yandex-cloud
+            └── yandex
+                └── 0.61.0
+                    └── linux_amd64
+                        ├── CHANGELOG.md
+                        ├── LICENSE
+                        ├── README.md
+                        └── terraform-provider-yandex_v0.61.0
+
+7 directories, 5 files
+```
+
+Результат сборки новых VM на основе модулей:
+
+darkon@darkonVM:~/DarkonGH_infra/terraform (terraform-2)$ terraform apply
+
+  Enter a value: yes
+
+module.app.yandex_compute_instance.app: Creating...
+module.db.yandex_compute_instance.db: Creating...
+module.app.yandex_compute_instance.app: Still creating... [10s elapsed]
+module.db.yandex_compute_instance.db: Still creating... [10s elapsed]
+module.app.yandex_compute_instance.app: Still creating... [20s elapsed]
+module.db.yandex_compute_instance.db: Still creating... [20s elapsed]
+module.app.yandex_compute_instance.app: Still creating... [30s elapsed]
+module.db.yandex_compute_instance.db: Still creating... [30s elapsed]
+module.app.yandex_compute_instance.app: Still creating... [40s elapsed]
+module.db.yandex_compute_instance.db: Still creating... [40s elapsed]
+module.db.yandex_compute_instance.db: Creation complete after 41s [id=fhmq47f04vt84pbkot1r]
+module.app.yandex_compute_instance.app: Creation complete after 46s [id=fhm9ks51orjvr9mqb1ol]
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+external_ip_address_app = "178.154.223.61"
+external_ip_address_db = "84.252.130.19184.252.130.191"
+
+Проверка наличия Ruby на VM app:
+
+```
+darkon@darkonVM:~/DarkonGH_infra/terraform (terraform-2)$ ssh ubuntu@178.154.223.61
+The authenticity of host '178.154.223.61 (178.154.223.61)' can't be established.
+ECDSA key fingerprint is SHA256:fCQImPKwUaE+rPfKwWt+64SdIokjWwqWBNLBpxWwh44.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '178.154.223.61' (ECDSA) to the list of known hosts.
+Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+ubuntu@fhm9ks51orjvr9mqb1ol:~$ ruby -v
+ruby 2.3.1p112 (2016-04-26) [x86_64-linux-gnu]
+```
+
+Проверка наличия MongoDB на VM db
+
+```
+darkon@darkonVM:~/DarkonGH_infra/terraform (terraform-2)$ ssh ubuntu@84.252.130.191
+The authenticity of host '84.252.130.191 (84.252.130.191)' can't be established.
+ECDSA key fingerprint is SHA256:EQL++K86AMLBlhrDEazk29FdezBDmgkgHcdYBQAsx6g.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '84.252.130.191' (ECDSA) to the list of known hosts.
+Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+ubuntu@fhmq47f04vt84pbkot1r:~$ systemctl status mongod
+● mongod.service - MongoDB Database Server
+   Loaded: loaded (/lib/systemd/system/mongod.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2021-07-30 15:20:13 UTC; 5min ago
+     Docs: https://docs.mongodb.org/manual
+ Main PID: 654 (mongod)
+   CGroup: /system.slice/mongod.service
+           └─654 /usr/bin/mongod --config /etc/mongod.conf
+
+Jul 30 15:20:13 fhmq47f04vt84pbkot1r systemd[1]: Started MongoDB Database Server.
+```
+
+### Переиспользование модулей
