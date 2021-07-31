@@ -596,3 +596,44 @@ Jul 30 15:20:13 fhmq47f04vt84pbkot1r systemd[1]: Started MongoDB Database Server
 ```
 
 ### Переиспользование модулей
+
+Создадим конфигруацию stage и prod с учетом использования общих модулей, принцип DRY (Don't repeat youself).
+Скопируем файлы: *key_tf.json  main.tf  outputs.tf terraform.tfvars  terraform.tfvars.example  variables.tf*  из папки terraform/ в
+terraform/stage и нициализируем terraform в каждой папке:
+
+```
+darkon@darkonVM:~/DarkonGH_infra/terraform/stage (terraform-2)$ terraform init
+Initializing modules...
+- app in ../modules/app
+- db in ../modules/db
+
+Initializing the backend...
+
+Initializing provider plugins...
+- Finding latest version of yandex-cloud/yandex...
+- Installing yandex-cloud/yandex v0.61.0...
+- Installed yandex-cloud/yandex v0.61.0 (self-signed, key ID E40F590B50BB8E40)
+
+Partner and community providers are signed by their developers.
+If you'd like to know more about provider signing, you can read about it here:
+https://www.terraform.io/docs/cli/plugins/signing.html
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+```
+
+Повторим тоже самое для prod.
+
+Проверим сборку VM для stage и prod - terraform apply, и удаление terraform destroy.
