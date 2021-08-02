@@ -643,13 +643,12 @@ commands will detect it and remind you to do so if necessary.
 ### Самостоятельное задание
 
 Параметризуем конфигурацию модулей, вынесем в переменные значения cores, core_fraction, memory и имя VM
-<<<<<<< HEAD
 
 ### Задание со *
 
 #### Настройка и хранение стейт файлов на удаленном бэкенде (Yandex Object Storage) для stage и prod
 
-Для настройки воспользуемя [инструкцией](<https://cloud.yandex.ru/docs/solutions/infrastructure-management/terraform-state-storage>)
+Для настройки воспользуемcя [инструкцией](<https://cloud.yandex.ru/docs/solutions/infrastructure-management/terraform-state-storage>)
 
 Создадим s3 бакет - terraform-yc-s3, с правами на чтение и запись, для сервисного аккаунта.
 
@@ -671,10 +670,11 @@ terraform {
 }
 ```
 
-Секретные ключи вынесем в отдельный файл *backend-config* с переменными, так называемой ["Partial Configuration"](<https://www.terraform.io/docs/language/settings/backends/configuration.html#partial-configuration>), по структуре аналоничный terraform.tfvars.
+Секретные ключи вынесем в отдельный файл *backend-config* с переменными, так называемой ["Partial Configuration"](<https://www.terraform.io/docs/language/settings/backends/configuration.html#partial-configuration>), по структуре аналогичный terraform.tfvars.
 
 
-Выполним terraform init  или terraform init -reconfigure с указанием ключа backend-config=./backend-config:
+Выполним terraform init или terraform init -reconfigure с указанием ключа backend-config=./backend-config:
+
 ```
 darkon@darkonVM:~/DarkonGH_infra/terraform/prod (terraform-2)$ terraform init -reconfigure -backend-config=./backend-config
 Initializing modules...
@@ -692,5 +692,3 @@ Terraform has been successfully initialized!
 ```
 
 Добавим файл  *backend-config* в .gitignore, для исключения попадания чувствительных данных в git.
-=======
->>>>>>> bdd83c9622e8bf09c37671b4221b2412e22380c0
