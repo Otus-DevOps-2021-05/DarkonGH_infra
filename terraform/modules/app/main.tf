@@ -1,5 +1,6 @@
 resource "yandex_compute_instance" "app" {
   name = var.name
+  allow_stopping_for_update = true
   labels = {
     tags = "reddit-app"
   }

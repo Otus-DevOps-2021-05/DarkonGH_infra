@@ -1,5 +1,6 @@
 resource "yandex_compute_instance" "db" {
   name = var.name
+  allow_stopping_for_update = true
   labels = {
     tags = "reddit-db"
   }

@@ -11,7 +11,7 @@ description = "Subnets for modules"
 variable core_fraction {
   description = "Core fraction for instance"
   type = number
-  default = 100
+  default = 20
 }
 variable cores {
   description = "Core number for instance"

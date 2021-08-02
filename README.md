@@ -676,7 +676,8 @@ terraform {
 Выполним terraform init или terraform init -reconfigure с указанием ключа backend-config=./backend-config:
 
 ```
-darkon@darkonVM:~/DarkonGH_infra/terraform/prod (terraform-2)$ terraform init -reconfigure -backend-config=./backend-config
+terraform init -reconfigure -backend-config=./backend-config
+
 Initializing modules...
 
 Initializing the backend...
@@ -692,3 +693,18 @@ Terraform has been successfully initialized!
 ```
 
 Добавим файл  *backend-config* в .gitignore, для исключения попадания чувствительных данных в git.
+
+#### Перенос конфигурационных файлов Terraform в другую директорию, проверка работы стейт файла из бэкета
+
+После настройки поддержки S3 бэкенда терраформ видит стейт файл из облака независимо от запускаемой директории.
+
+#### Одновременный запуск применения конфигурации
+
+В ходе тестов с Yandex Cloud выяснилось, что блоикровка применения конфигурации не работает. Т.к. нет поддержки DynamoDb.
+Для примера в AWS S3 необходимо создать dyanamodb_table в существующей DaynamoDB, после этого включится блокировка удаленного стейт файла.
+
+```
+Stores the state as a given key in a given bucket on Amazon S3. This backend also supports state locking and consistency checking via Dynamo DB, which can be enabled by setting the dynamodb_table field to an existing DynamoDB table name. A single DynamoDB table can be used to lock multiple remote state files. Terraform generates key names that include the values of the bucket and key variables.
+```
+
+### Задание с ** "Провижинеры для app модуля"
