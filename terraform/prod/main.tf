@@ -6,6 +6,7 @@ provider "yandex" {
 }
 
 module "app" {
+  name            = "reddit-app-prod"
   source          = "../modules/app"
   public_key_path = var.public_key_path
   app_disk_image  = var.app_disk_image
@@ -13,6 +14,7 @@ module "app" {
 }
 
 module "db" {
+  name            = "reddit-db-prod"
   source          = "../modules/db"
   public_key_path = var.public_key_path
   db_disk_image   = var.db_disk_image

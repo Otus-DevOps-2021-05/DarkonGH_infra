@@ -529,6 +529,7 @@ darkon@darkonVM:~/DarkonGH_infra/terraform (terraform-2)$ tree .terraform
 
 Результат сборки новых VM на основе модулей:
 
+```
 darkon@darkonVM:~/DarkonGH_infra/terraform (terraform-2)$ terraform apply
 
   Enter a value: yes
@@ -552,6 +553,7 @@ Outputs:
 
 external_ip_address_app = "178.154.223.61"
 external_ip_address_db = "84.252.130.19184.252.130.191"
+```
 
 Проверка наличия Ruby на VM app:
 
@@ -643,3 +645,49 @@ commands will detect it and remind you to do so if necessary.
 Параметризуем конфигурацию модулей, вынесем в переменные значения cores, core_fraction, memory и имя VM
 
 ### Задание со *
+
+#### Настройка и хранение стейт файлов на удаленном бэкенде (Yandex Object Storage) для stage и prod
+
+Для настройки воспользуемя [инструкцией](<https://cloud.yandex.ru/docs/solutions/infrastructure-management/terraform-state-storage>)
+
+Создадим s3 бакет - terraform-yc-s3, с правами на чтение и запись, для сервисного аккаунта.
+
+Конфигурация бэкенда задается в секции terraform, backend "s3":
+
+```
+terraform {
+  backend "s3" {
+    endpoint   = "storage.yandexcloud.net"
+    bucket     = "terraform-yc-s3"
+    region     = "ru-central1"
+    key        = "stage/terraform.tfstate"
+    access_key = var.access_key
+    secret_key = var.secret_key
+
+    skip_region_validation      = true
+    skip_credentials_validation = true
+  }
+}
+```
+
+Секретные ключи вынесем в отдельный файл *backend-config* с переменными, так называемой ["Partial Configuration"](<https://www.terraform.io/docs/language/settings/backends/configuration.html#partial-configuration>), по структуре аналоничный terraform.tfvars.
+
+
+Выполним terraform init  или terraform init -reconfigure с указанием ключа backend-config=./backend-config:
+```
+darkon@darkonVM:~/DarkonGH_infra/terraform/prod (terraform-2)$ terraform init -reconfigure -backend-config=./backend-config
+Initializing modules...
+
+Initializing the backend...
+
+Successfully configured the backend "s3"! Terraform will automatically
+use this backend unless the backend configuration changes.
+
+Initializing provider plugins...
+- Reusing previous version of yandex-cloud/yandex from the dependency lock file
+- Using previously-installed yandex-cloud/yandex v0.61.0
+
+Terraform has been successfully initialized!
+```
+
+Добавим файл  *backend-config* в .gitignore, для исключения попадания чувствительных данных в git.
