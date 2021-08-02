@@ -643,6 +643,7 @@ commands will detect it and remind you to do so if necessary.
 ### Самостоятельное задание
 
 Параметризуем конфигурацию модулей, вынесем в переменные значения cores, core_fraction, memory и имя VM
+<<<<<<< HEAD
 
 ### Задание со *
 
@@ -691,3 +692,5 @@ Terraform has been successfully initialized!
 ```
 
 Добавим файл  *backend-config* в .gitignore, для исключения попадания чувствительных данных в git.
+=======
+>>>>>>> bdd83c9622e8bf09c37671b4221b2412e22380c0
