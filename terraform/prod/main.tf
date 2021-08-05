@@ -9,14 +9,20 @@ module "app" {
   name            = "reddit-app-prod"
   source          = "../modules/app"
   public_key_path = var.public_key_path
+  private_key_path= var.private_key_path
   app_disk_image  = var.app_disk_image
   subnet_id       = var.subnet_id
+  path_puma_service = var.path_puma_service
+  path_deploy_script = var.path_deploy_script
+  db_ip             = module.db.internal_ip_address_db
 }
 
 module "db" {
   name            = "reddit-db-prod"
   source          = "../modules/db"
   public_key_path = var.public_key_path
+  private_key_path= var.private_key_path
   db_disk_image   = var.db_disk_image
   subnet_id       = var.subnet_id
+  path_mongod_conf = var.path_mongod_conf
 }

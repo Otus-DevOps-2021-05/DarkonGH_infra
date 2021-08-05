@@ -41,3 +41,12 @@ variable "db_disk_image" {
   description = "Disk image for reddit db"
   default     = "reddit-db-base"
 }
+variable path_puma_service {
+  description = "path to file puma_service in modules/app"
+}
+variable path_deploy_script {
+  description = "path to file deploy.sh in modules/app"
+}
+variable path_mongod_conf {
+  description = "mongod.conf file"
+}

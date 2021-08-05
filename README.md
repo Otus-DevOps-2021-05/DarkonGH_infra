@@ -708,3 +708,120 @@ Stores the state as a given key in a given bucket on Amazon S3. This backend als
 ```
 
 ### Задание с ** "Провижинеры для app модуля"
+
+#### Добавление провижионеров для db VM
+
+В конфигрукции mongod.conf указана прослушка сервиса только на Ip 127.0.0.1. Для замены на 0.0.0.0 есть несколько вариантов. 1. можно запечь образ пакером с другой конфигурационным файлом mongod.conf и использовать новый образ в терраформе. 2. можно заменить конфигурационный файл mongod.conf через провижионер в терраформе.
+Воспользуемся вторым способом, добавим в модуль db main.tf:
+
+```
+ connection {
+    type  = "ssh"
+    host  = yandex_compute_instance.db.network_interface.0.nat_ip_address
+    user  = "ubuntu"
+    agent = false
+    # путь до приватного ключа
+    private_key = file(var.private_key_path)
+  }
+
+  provisioner "file" {
+    source      = var.path_mongod_conf
+    destination = "/tmp/mongod.conf"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo systemctl stop mongod",
+      "sudo mv /tmp/mongod.conf /etc/mongod.conf",
+      "sudo systemctl start mongod"
+    ]
+  }
+```
+
+Также необходимо передать внутренний Ip адрес db в переменную. Добавим в output.tf:
+
+```
+output "internal_ip_address_db" {
+  value = yandex_compute_instance.db.network_interface.0.ip_address
+}
+```
+
+И переменную относительного пути расположения файла конфигурации сервиса mongod.
+Т.к. мы переиспользуем модули, запуск может идти из stage и prod, следовательно относительный путь к файлу mongod.conf для модуля меняется.
+
+```
+variable path_mongod_conf {
+  description = "mongod.conf file"
+}
+```
+
+#### Добавление провижионеров для app VM
+
+Сервис приложения puma при запуске проверяет переменную окружения DATABASE_URL, таким образом ему можно передать адрес базы данные расположенной на другой VM.
+Настроим провижионер для этого.
+
+```
+ connection {
+    type  = "ssh"
+    host  = yandex_compute_instance.app.network_interface.0.nat_ip_address
+    user  = "ubuntu"
+    agent = false
+    # путь до приватного ключа
+    private_key = file(var.private_key_path)
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "echo DATABASE_URL=${var.db_ip} > dburl.txt"
+    ]
+  }
+  provisioner "file" {
+    source      = var.path_puma_service
+    destination = "/tmp/puma.service"
+  }
+
+  provisioner "remote-exec" {
+    script = var.path_deploy_script
+  }
+```
+
+В unit файл сервиса добавим загрузку переменных окружения, в секцию *[Service]*:
+
+```
+EnvironmentFile=/home/ubuntu/dburl.txt
+```
+
+ И переменные в variables.tf:
+ ```
+ variable path_puma_service {
+  description = "path to file puma_service"
+}
+variable path_deploy_script {
+  description = "path to file deploy.sh in modules/app"
+}
+variable db_ip {
+  description = "app server ip address"
+}
+```
+
+Результат проделанной работы, приложение, подключается к mongoDB по адресу *10.128.0.31:27017*:
+
+```
+buntu@fhmh5qthhapig97i0lvt:~$ sudo systemctl status puma
+● puma.service - Puma HTTP Server
+   Loaded: loaded (/etc/systemd/system/puma.service; enabled; vendor preset: enabled)
+   Active: active (running) since Thu 2021-08-05 15:08:52 UTC; 7min ago
+ Main PID: 1729 (ruby2.3)
+   CGroup: /system.slice/puma.service
+           └─1729 puma 3.10.0 (tcp://0.0.0.0:9292) [reddit
+
+Aug 05 15:08:52 fhmh5qthhapig97i0lvt bash[1729]: * Min threads: 0, max threads: 16
+Aug 05 15:08:52 fhmh5qthhapig97i0lvt bash[1729]: * Environment: development
+Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: /home/ubuntu/reddit/helpers.rb:4: warning: redefining `object_id' may cause serious probl
+Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: D, [2021-08-05T15:08:53.122423 #1729] DEBUG -- : MONGODB | Topology type 'unknown' initia
+Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: D, [2021-08-05T15:08:53.122610 #1729] DEBUG -- : MONGODB | Server 10.128.0.31:27017 initi
+Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: D, [2021-08-05T15:08:53.137657 #1729] DEBUG -- : MONGODB | Topology type 'unknown' change
+Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: D, [2021-08-05T15:08:53.137826 #1729] DEBUG -- : MONGODB | Server description for 10.128.
+Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: D, [2021-08-05T15:08:53.137940 #1729] DEBUG -- : MONGODB | There was a change in the memb
+Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: * Listening on tcp://0.0.0.0:9292
+Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: Use Ctrl-C to stop
+```
