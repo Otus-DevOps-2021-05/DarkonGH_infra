@@ -21,13 +21,15 @@ testapp_port = 9292
 
 #### Подключение на машину *bastion*
 
->PS C:\WINDOWS\system32> ssh -A appuser@217.28.231.251
+```
+PS C:\WINDOWS\system32> ssh -A appuser@217.28.231.251
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
->
-> * Documentation:  <https://help.ubuntu.com>
-> * Management:     <https://landscape.canonical.com>
-> * Support:        <https://ubuntu.com/advantage>
+
+ * Documentation:  <https://help.ubuntu.com>
+ * Management:     <https://landscape.canonical.com>
+ * Support:        <https://ubuntu.com/advantage>
 appuser@bastion:~$
+```
 
 #### Настройка OpenSSH сервера
 
@@ -43,13 +45,15 @@ appuser@bastion:~$
 
 Для проверки подключения введем команду *ssh appuser@localhost -p 22022*
 
->appuser@bastion:~$ ssh appuser@localhost -p 22022
+```
+appuser@bastion:~$ ssh appuser@localhost -p 22022
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
->
-> * Documentation:  <https://help.ubuntu.com>
-> * Management:     <https://landscape.canonical.com>
-> * Support:        <https://ubuntu.com/advantage>
+
+ * Documentation:  <https://help.ubuntu.com>
+ * Management:     <https://landscape.canonical.com>
+ * Support:        <https://ubuntu.com/advantage>
 appuser@someinternalhost:~$
+```
 
 Судя по приглашению *appuser@someinternalhost* подключение прошло успешно.
 
@@ -58,21 +62,26 @@ appuser@someinternalhost:~$
 *ssh -A appuser@178.154.231.92 -p 22022*
 где IP адрес 178.154.231.92 машины *bastion*
 
->PS C:\WINDOWS\system32> ssh -A appuser@178.154.231.92 -p 22022
+```
+PS C:\WINDOWS\system32> ssh -A appuser@178.154.231.92 -p 22022
 ssh: connect to host 178.154.231.92 port 22022: Connection refused
+```
 
 Подключение должно было пройти напрямую на машину *someinternalhost*, но возникла ошибка.
 По каким то причинам порт 22022 блокируется.
 Просмотр iptables на машине *bastion* показывает, что все порты открыты (применена политика ACCEPT):
+
+```
 appuser@bastion:~$ sudo iptables -L -nv
->Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
+Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
  pkts bytes target     prot opt in     out     source               destination
->
->Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
  pkts bytes target     prot opt in     out     source               destination
->
->Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
+
+Chain OUTPUT (policy ACCEPT 0 packets, 0 bytes)
  pkts bytes target     prot opt in     out     source               destination
+```
 
 Изучение документации Yandex Cloud не дает ответа какие порты блокируются и блокируются ли вообще:
 <https://cloud.yandex.ru/docs/vpc/concepts/network>
@@ -93,56 +102,65 @@ debug1: Local connections to 10.128.0.13:22022 forwarded to remote address socks
 Как выяснилось, при повтороной настройке, я ранее внес команду *GatewayPorts yes* не в тот конфиг файл,
 надо вносить в **ssh_config**. После этого команда: *ssh -fNv -L 22022:localhost:22 10.128.0.12* запустилась на всех интерфейсах
 
->debug1: Authentication succeeded (publickey).
+```
+debug1: Authentication succeeded (publickey).
 Authenticated to 10.128.0.12 ([10.128.0.12]:22).
 debug1: Local connections to *:22022 forwarded to remote address localhost:22
 debug1: Local forwarding listening on 0.0.0.0 port 22022.
 debug1: channel 0: new [port listener]
 debug1: Local forwarding listening on :: port 22022.
+```
 
 Далее, подключаемся с локальной  рабочей машины, командой *ssh -A appuser@178.154.231.92 -p 22022* напрямую к someinternalhost, минуя bastion VM:
->PS C:\WINDOWS\system32> ssh -A appuser@178.154.231.92 -p 22022
+
+```
+PS C:\WINDOWS\system32> ssh -A appuser@178.154.231.92 -p 22022
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
->
-> * Documentation:  <https://help.ubuntu.com>
-> * Management:     <https://landscape.canonical.com>
-> * Support:        <https://ubuntu.com/advantage>
+
+ * Documentation:  <https://help.ubuntu.com>
+ * Management:     <https://landscape.canonical.com>
+ * Support:        <https://ubuntu.com/advantage>
 appuser@someinternalhost:~$ hostname
 someinternalhost
 appuser@someinternalhost:~$ uname -a
 Linux someinternalhost 4.4.0-142-generic #168-Ubuntu SMP Wed Jan 16 21:00:45 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
 appuser@someinternalhost:~$
+```
 
 Бонусом:
 Выполняем еще одно перенаправление с локальной рабочей машины:
 *PS C:\WINDOWS\system32> ssh  -fNv -A appuser@178.154.231.92 -L 22022:localhost:22022 178.154.231.92*
 После этого можно подключаться локально на localhost:22022, попадая сразу на someinternalhost:
 
->PS C:\WINDOWS\system32> ssh -A appuser@localhost -p 22022
+```
+PS C:\WINDOWS\system32> ssh -A appuser@localhost -p 22022
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
->
-> * Documentation:  <https://help.ubuntu.com>
-> * Management:     <https://landscape.canonical.com>
-> * Support:        <https://ubuntu.com/advantage>
+
+ * Documentation:  <https://help.ubuntu.com>
+ * Management:     <https://landscape.canonical.com>
+ * Support:        <https://ubuntu.com/advantage>
 appuser@someinternalhost:~$ hostname
 someinternalhost
 appuser@someinternalhost:~$
+```
 
 #### еще один варинт подключения одной командой
 
 Введем команду *ssh -A appuser@178.154.231.92 ssh 10.128.0.12*.
 
->PS C:\WINDOWS\system32> ssh -A appuser@178.154.231.92 ssh 10.128.0.12
+```
+PS C:\WINDOWS\system32> ssh -A appuser@178.154.231.92 ssh 10.128.0.12
 Pseudo-terminal will not be allocated because stdin is not a terminal.
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
->
-> * Documentation:  <https://help.ubuntu.com>
-> * Management:     <https://landscape.canonical.com>
-> * Support:        <https://ubuntu.com/advantage>
+
+ * Documentation:  <https://help.ubuntu.com>
+ * Management:     <https://landscape.canonical.com>
+ * Support:        <https://ubuntu.com/advantage>
 hostname
 someinternalhost
 uname -a
 Linux someinternalhost 4.4.0-142-generic #168-Ubuntu SMP Wed Jan 16 21:00:45 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
+```
 
 ### Дополнительное задание 1 ssh
 
@@ -151,21 +169,25 @@ Linux someinternalhost 4.4.0-142-generic #168-Ubuntu SMP Wed Jan 16 21:00:45 UTC
 Создадим файл *~/.ssh/config*
 Добавим парметры удаленного хоста:
 
->Host someinternalhost
->HostName 127.0.0.1
->User appuser
->Port 22022
+```
+Host someinternalhost
+HostName 127.0.0.1
+User appuser
+Port 22022
+```
 
 Теперь можно подключаться к удаленному серверу по алиасу:
 *ssh someinternalhost*
 
->PS C:\WINDOWS\system32> ssh someinternalhost
+```
+PS C:\WINDOWS\system32> ssh someinternalhost
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
->
-> * Documentation:  <https://help.ubuntu.com>
-> * Management:     <https://landscape.canonical.com>
-> * Support:        <https://ubuntu.com/advantage>
+
+ * Documentation:  <https://help.ubuntu.com>
+ * Management:     <https://landscape.canonical.com>
+ * Support:        <https://ubuntu.com/advantage>
 appuser@someinternalhost:~$
+```
 
 Подключение прошло успешно.
 
@@ -176,13 +198,15 @@ appuser@someinternalhost:~$
 
 После настройки vpn и подключения, проверяем подключение к someinternalhost с 10.128.0.12
 
->PS C:\WINDOWS\system32> ssh -A appuser@10.128.0.12
+```
+PS C:\WINDOWS\system32> ssh -A appuser@10.128.0.12
 Welcome to Ubuntu 16.04.7 LTS (GNU/Linux 4.4.0-142-generic x86_64)
->
-> * Documentation:  <https://help.ubuntu.com>
-> * Management:     <https://landscape.canonical.com>
-> * Support:        <https://ubuntu.com/advantage>
+
+ * Documentation:  <https://help.ubuntu.com>
+ * Management:     <https://landscape.canonical.com>
+ * Support:        <https://ubuntu.com/advantage>
 appuser@someinternalhost:~$
+```
 
 ### Подключение к bastion и someinternalhost
 
@@ -217,7 +241,8 @@ appuser@someinternalhost:~$
 
 Дополнительный ключ *--metadata-from-file user-data=metadata.yaml*, который позволяет выполнять необходимые действия после создания инстанса.
 
-> yc compute instance create \
+```
+ yc compute instance create \
  --name reddit-app \
  --hostname reddit-app \
  --memory=4 \
@@ -225,6 +250,7 @@ appuser@someinternalhost:~$
  --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 \
  --metadata-from-file user-data=metadata.yaml \
  --metadata serial-port-enable=1
+```
 
 ## Домашнее задание №5  Сборка образов VM при помощи Packer
 
@@ -256,17 +282,23 @@ appuser@someinternalhost:~$
 
 * Определим переменную для приватного ключа использующегося в определении подключения для
 провижинеров (connection).
-    >variable "private_key_path" {
-        description = "Path to the private ssh key"
-    }
-    >private_key_path         = "~/.ssh/ubuntu"
+
+```
+variable "private_key_path" {
+   description = "Path to the private ssh key"
+ }
+
+private_key_path         = "~/.ssh/ubuntu"
+```
 
 * Определим input переменную для зоны в ресурсе "yandex_compute_instance" "app" и ее значение по умолчанию.
-    > variable "zone" {
-        description = "Zone"
-        # Значение по умолчанию
-        default = "ru-central1-a"
-    }
+```
+variable "zone" {
+   description = "Zone"
+   # Значение по умолчанию
+   default = "ru-central1-a"
+}
+```
 
 * Создание файла *terraform.tfvars.example* примера в переменными.
 
@@ -276,51 +308,60 @@ appuser@someinternalhost:~$
 * Добавление второго инстанса в *main.tf*
 * Добавим вывод IP Адреса балансирощика в output переменную:
 
->Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
->
->Outputs:
->
->external_ip_address_app = "178.154.207.150"
->external_ip_address_app1 = "178.154.220.113"
->lb_ip_address = tolist([
-> "84.201.134.115",
->])
+```
+Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+external_ip_address_app = "178.154.207.150"
+external_ip_address_app1 = "178.154.220.113"
+lb_ip_address = tolist([
+ "84.201.134.115",
+])
+```
 
 * Проблемы конфигурации деплоя приложения на два инстанса - т.к. у нас в развертываемом приложении используется база данных MongoDB на каждом инстанесе, то получается должно быть настроено зеркалирование или репликация данных между БД, для корректной работы приложения с балансировщиком. А также присутсвует избыточная конфигурация в коде.
 
 * Описание создания идентичных инстантов через парметр count, в *main.tf* добавим:
 
-> resource "yandex_compute_instance" "app" {
-> name  = "reddit-app-${count.index}"
-> count = var.count_of_instances
+```
+resource "yandex_compute_instance" "app" {
+name  = "reddit-app-${count.index}"
+count = var.count_of_instances
+```
 
 в *variables.tf* добавим:
 
-> variable count_of_instances {
-> description = "Count of instances"
-> default     = 2
-> }
+```
+variable count_of_instances {
+description = "Count of instances"
+default     = 2
+}
+```
 
 в *lb.tf* добавим:
 
-> resource "yandex_lb_target_group" "app_lb_target_group" {
-> name      = "app-lb-group"
-> region_id = var.region_id
->
-    >dynamic "target" {
-     > for_each = yandex_compute_instance.app.*.network_interface.0.ip_address
-     > content {
-         > subnet_id = var.subnet_id
-         > address   = target.value
-       > }
-   > }
- > }
+```
+resource "yandex_lb_target_group" "app_lb_target_group" {
+name      = "app-lb-group"
+region_id = var.region_id
+
+    dynamic "target" {
+      for_each = yandex_compute_instance.app.*.network_interface.0.ip_address
+      content {
+          subnet_id = var.subnet_id
+          address   = target.value
+        }
+    }
+  }
+```
 
  в *outputs.tf* добавим:
-
- > output "external_ip_address_app" {
- > value = yandex_compute_instance.app[*].network_interface.0.nat_ip_address
-> }
+```
+  output "external_ip_address_app" {
+  value = yandex_compute_instance.app[*].network_interface.0.nat_ip_address
+ }
+```
 
 ### Полезные ссылки для настройки
 
@@ -707,7 +748,7 @@ Terraform has been successfully initialized!
 Stores the state as a given key in a given bucket on Amazon S3. This backend also supports state locking and consistency checking via Dynamo DB, which can be enabled by setting the dynamodb_table field to an existing DynamoDB table name. A single DynamoDB table can be used to lock multiple remote state files. Terraform generates key names that include the values of the bucket and key variables.
 ```
 
-### Задание с ** "Провижинеры для app модуля"
+### Задание с ** Провижинеры для app и db модуля
 
 #### Добавление провижионеров для db VM
 
