@@ -1,6 +1,7 @@
 #!/bin/bash
 
 apt-get -y update
+sleep 10s
 
 if apt-get install -y apt-transport-https ca-certificates
   then
@@ -9,6 +10,7 @@ if apt-get install -y apt-transport-https ca-certificates
   fi
 
 apt-get update
+sleep 10s
 
 if apt-get install -y mongodb-org
 then

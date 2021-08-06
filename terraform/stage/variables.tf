@@ -25,11 +25,28 @@ variable "service_account_key_file" {
 variable "private_key_path" {
   description = "Path to the private ssh key"
 }
-variable region_id {
+variable "region_id" {
   description = "ID of the region that the application load balancer is located at"
   default     = "ru-central1"
 }
-variable count_of_instances {
+variable "count_of_instances" {
   description = "Count of instances"
   default     = 1
+}
+variable "app_disk_image" {
+  description = "Disk image for reddit app"
+  default     = "reddit-app-base"
+}
+variable "db_disk_image" {
+  description = "Disk image for reddit db"
+  default     = "reddit-db-base"
+}
+variable path_puma_service {
+  description = "path to file puma_service in modules/app"
+}
+variable path_deploy_script {
+  description = "path to file deploy.sh in modules/app"
+}
+variable path_mongod_conf {
+  description = "mongod.conf file"
 }

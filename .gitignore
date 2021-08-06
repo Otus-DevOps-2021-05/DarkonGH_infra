@@ -6,3 +6,4 @@
 key_tf.json
 .terraform.lock.hcl
 version.tf
+backend-config

@@ -5,14 +5,6 @@ provider "yandex" {
   zone                     = var.zone
 }
 
-#terraform {
-#  required_providers {
-#    yandex = {
-#      source = "yandex-cloud/yandex"
-#    }
-#  }
-#}
-
 resource "yandex_compute_instance" "app" {
   name  = "reddit-app-${count.index}"
   count = var.count_of_instances
