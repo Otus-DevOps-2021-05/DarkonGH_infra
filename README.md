@@ -866,3 +866,5 @@ Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: D, [2021-08-05T15:08:53.137940 
 Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: * Listening on tcp://0.0.0.0:9292
 Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: Use Ctrl-C to stop
 ```
+
+## Домашнее задание №8 Управление конфигурацией. Знакомство с Ansible (ДЗ №8 Написание Ansible плейбуков на основе имеющихся bash скриптов)
