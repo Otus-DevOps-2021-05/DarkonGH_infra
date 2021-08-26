@@ -872,17 +872,17 @@ Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: Use Ctrl-C to stop
 
 ### Написание плейбука деплоя приложения
 
-Удалим ранее хзадеплоенное приложение с помощью модуля command
+Удалим ранее задеплоенное приложение с помощью модуля command
 
 ```bash
-darkon@darkonVM:~/DarkonGH_infra/ansible (ansible-1)$ ansible app -m command -a 'rm -rf ~/reddit'
+$ ansible app -m command -a 'rm -rf ~/reddit'
 appserver | CHANGED | rc=0 >>
 ```
 
 И произведем деплой приложения при помощи плейбука
 
 ```bash
-darkon@darkonVM:~/DarkonGH_infra/ansible (ansible-1)$ ansible-playbook clone.yml
+$ ansible-playbook clone.yml
 
 PLAY [Clone] ********************************************************************************************************************************
 
@@ -897,3 +897,31 @@ appserver                  : ok=2    changed=1    unreachable=0    failed=0    s
 ```
 
 В результате выполнения мы видим, что произошло изменение, т.е. произошел деплой приложения (т.к. его не было по указанному пути)
+
+### Задание со * - динамическое инвентори
+
+### Настройка динамического инвентори
+
+Для работы ansible с динамическим инвентори необходимо сформировать инвентори файл в формате json при этом он должен формироваться динамически, что бы ansible принял его в качестве инвентори.
+Пример из документации:
+```
+After a few moments you should see some JSON output with information about your compute instances.
+Once you confirm the dynamic inventory script is working as expected, you can tell Ansible to use the openstack_inventory.py script as an inventory file, as illustrated below:
+ansible -i openstack_inventory.py all -m ansible.builtin.ping
+```
+
+Источником данных для динамического инвентори будем использовать вывод команды:
+```bash
+terraform state pull
+```
+Напишем скрипт обработки данного файл и сохраним inventory.json в динамическом формате. Сам файл inventory.json для работы ansible не нужен, он нужен только для просмотра содержания.
+В тоже время сам скрипт *dynamic_inventory_json.py* будет входным файлом для JSON-инвентори.
+Для того чтобы команда *ansible all -m ping* выполнилась корректно, в asible.cfg укажим параметр.
+```
+inventory = ./dynamic_inventory_json.py
+```
+ansible понимая, что ему на вход подается JSON-инвентори сам добавляет ключ *--list* необходимый для работы *dynamic_inventory_json.py*
+
+#### Отличия статического и динамического JSON
+
+В статическом JSON хосты перечислены списком в формате "ключ : значение", даже если значение null, а в динамическом JSON хосты представлены списком в квадратных скобках, в виде только имен "ключ". При этом значения вынесены в отдельную секцию _meta/hostvars. Таким образом сначала идут логические группировки хостов по группам  без повторения значений если хост входт в разные групп одновременно.
