@@ -1,4 +1,11 @@
 {
+    "all": {
+        "children": [
+            "app",
+            "db",
+            "ungrouped"
+        ]
+    },
     "app": {
         "hosts": [
             "appserver"
