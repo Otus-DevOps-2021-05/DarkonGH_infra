@@ -6,6 +6,11 @@
             "ungrouped"
         ]
     },
+    "localhost1": {
+        "hosts": [
+            "localhost"
+        ]
+    },
     "app": {
         "hosts": [
             "appserver"
