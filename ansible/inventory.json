@@ -3,7 +3,8 @@
         "children": [
             "app",
             "db",
-            "ungrouped"
+            "ungrouped",
+            "localhost1"
         ]
     },
     "localhost1": {
