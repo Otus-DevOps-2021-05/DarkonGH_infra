@@ -30,6 +30,9 @@
             },
             "dbserver": {
                 "ansible_host": "84.201.172.156"
+            },
+            "localhost1": {
+                "ansible_host": "127.0.0.1"
             }
         }
     }
