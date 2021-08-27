@@ -7,3 +7,6 @@ key_tf.json
 .terraform.lock.hcl
 version.tf
 backend-config
+.vscode/
+env_tf_state
+inventory.py
