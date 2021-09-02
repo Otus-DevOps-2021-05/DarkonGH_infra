@@ -992,12 +992,12 @@ ansible понимая, что ему на вход подается JSON-инв
 
 ### Провижининг в Packer
 
-Создадим плейбуки ansible/packer_app.yml и ansible/packer_db.yml на основе аналогичных bash-скриптов изпользующихся в конфигурации с пакером.
-Заменим секции provision в образах пакера packer/app.json и packer/db.json на Ansible.
+Создадим плейбуки ansible/packer_app.yml и ansible/packer_db.yml на основе аналогичных bash-скриптов изпользующихся в конфигурации с Packer'ом.
+Заменим секции Зrovision в образах Packer'а: packer/app.json и packer/db.json на Ansible.
 
 Запустим сборку образов Packer'ом:
 ```bash
-packer build -var-file=packer/variables.json  packer/app.json
+packer build -var-file=packer/variables.json packer/app.json
 
 yandex: output will be in this color.
 
@@ -1042,7 +1042,7 @@ Build 'yandex' finished after 4 minutes 18 seconds.
 --> yandex: A disk image was created: reddit-app-base-1630613651 (id: fd8i00npgi61kun4ah1b) with family name reddit-app-base
 ```
 
-```
+```bash
 packer build -var-file=packer/variables.json  packer/db.json
 
 yandex: output will be in this color.
