@@ -18,11 +18,11 @@
     "_meta": {
         "hostvars": {
             "appserver": {
-                "ansible_host": "62.84.113.38",
-                "db_host": "10.128.0.30"
+                "ansible_host": "62.84.115.153",
+                "db_host": "10.128.0.17"
             },
             "dbserver": {
-                "ansible_host": "62.84.114.208"
+                "ansible_host": "62.84.115.7"
             },
             "localhost": {
                 "ansible_host": "127.0.0.1"

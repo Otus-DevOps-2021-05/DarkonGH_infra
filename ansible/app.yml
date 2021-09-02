@@ -29,11 +29,11 @@
     - name: enable puma
       systemd: name=puma enabled=yes
 
-    - name: Install git
-      apt:
-        name: git
-        state: present
-        update_cache: yes
+    #- name: Install git
+    #  apt:
+    #    name: git
+    #    state: present
+    #    update_cache: yes
 
   handlers:
   - name: reload puma

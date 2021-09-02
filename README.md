@@ -916,7 +916,7 @@ terraform state pull
 ```
 Напишем скрипт обработки данного файл и сохраним inventory.json в динамическом формате. Сам файл inventory.json для работы ansible не нужен, он нужен только для просмотра содержания.
 В тоже время сам скрипт *dynamic_inventory_json.py* будет входным файлом для JSON-инвентори.
-Для того чтобы команда *ansible all -m ping* выполнилась корректно, в asible.cfg укажем параметр.
+Для того чтобы команда *ansible all -m ping* выполнилась корректно, в ansible.cfg укажем параметр.
 ```
 inventory = ./dynamic_inventory_json.py
 ```
@@ -985,7 +985,176 @@ ansible понимая, что ему на вход подается JSON-инв
 ### Задание со * - использование динамического инвентори в плейбуков
 
 Доработаем скрип динамического инвентори dynamic_inventory_json.py до версии 2 (dynamic_inventory_json2.py):
-1. добавим загрузку значения переменной окружения TF_STATE из файла env_tf_state.env, если файл не найден, то используется TF_STATE из шела
+1. добавим загрузку значения переменной окружения TF_STATE из файла *env_tf_state.env*, если файл не найден, то используется TF_STATE из шела
 2. В полученных данных из terraform state pull? выгрузим внутренний IP адрес mongoDB? в файл vars.json с переменной импортируемой в ansible
 
 Таким образом при запуске прейбука *ansible-playbook site.yml* нам теперь не требуется менять IP адреса в переменных самого плейбука, т.к. у нас динамически формируемая инфраструктура.
+
+### Провижининг в Packer
+
+Создадим плейбуки ansible/packer_app.yml и ansible/packer_db.yml на основе аналогичных bash-скриптов изпользующихся в конфигурации с пакером.
+Заменим секции provision в образах пакера packer/app.json и packer/db.json на Ansible.
+
+Запустим сборку образов Packer'ом:
+```bash
+packer build -var-file=packer/variables.json  packer/app.json
+
+yandex: output will be in this color.
+
+==> yandex: Creating temporary ssh key for instance...
+==> yandex: Using as source image: fd869u2laf181s38k2cr (name: "ubuntu-1604-lts-1612430962", family: "ubuntu-1604-lts")
+==> yandex: Use provided subnet id e9bhddb5c34atpg4rd2j
+==> yandex: Creating disk...
+==> yandex: Creating instance...
+==> yandex: Waiting for instance with id fhmhl7q55akrb7uhi98g to become active...
+    yandex: Detected instance IP: 62.84.113.75
+==> yandex: Using SSH communicator to connect: 62.84.113.75
+==> yandex: Waiting for SSH to become available...
+==> yandex: Connected to SSH!
+==> yandex: Provisioning with Ansible...
+    yandex: Setting up proxy adapter for Ansible....
+==> yandex: Executing Ansible: ansible-playbook -e packer_build_name="yandex" -e packer_builder_type=yandex --ssh-extra-args '-o IdentitiesOnly=yes' -e ansible_ssh_private_key_file=/tmp/ansible-key888675944 -i /tmp/packer-provisioner-ansible782643367 /home/darkon/DarkonGH_infra/ansible/packer_app.yml
+    yandex:
+    yandex: PLAY [Install Ruby and Bundler] ************************************************
+    yandex:
+    yandex: TASK [Gathering Facts] *********************************************************
+    yandex: ok: [default]
+    yandex:
+    yandex: TASK [Install packages for app] ************************************************
+    yandex: changed: [default]
+    yandex:
+    yandex: PLAY RECAP *********************************************************************
+    yandex: default                    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+    yandex:
+==> yandex: Stopping instance...
+==> yandex: Deleting instance...
+    yandex: Instance has been deleted!
+==> yandex: Creating image: reddit-app-base-1630613651
+==> yandex: Waiting for image to complete...
+==> yandex: Success image create...
+==> yandex: Destroying boot disk...
+    yandex: Disk has been deleted!
+Build 'yandex' finished after 4 minutes 18 seconds.
+
+==> Wait completed after 4 minutes 18 seconds
+
+==> Builds finished. The artifacts of successful builds are:
+--> yandex: A disk image was created: reddit-app-base-1630613651 (id: fd8i00npgi61kun4ah1b) with family name reddit-app-base
+```
+
+```
+packer build -var-file=packer/variables.json  packer/db.json
+
+yandex: output will be in this color.
+
+==> yandex: Creating temporary ssh key for instance...
+==> yandex: Using as source image: fd869u2laf181s38k2cr (name: "ubuntu-1604-lts-1612430962", family: "ubuntu-1604-lts")
+==> yandex: Use provided subnet id e9bhddb5c34atpg4rd2j
+==> yandex: Creating disk...
+==> yandex: Creating instance...
+==> yandex: Waiting for instance with id fhmhl7q55akrb7uhi98g to become active...
+    yandex: Detected instance IP: 62.84.113.75
+==> yandex: Using SSH communicator to connect: 62.84.113.75
+==> yandex: Waiting for SSH to become available...
+==> yandex: Connected to SSH!
+==> yandex: Provisioning with Ansible...
+    yandex: Setting up proxy adapter for Ansible....
+==> yandex: Executing Ansible: ansible-playbook -e packer_build_name="yandex" -e packer_builder_type=yandex --ssh-extra-args '-o IdentitiesOnly=yes' -e ansible_ssh_private_key_file=/tmp/ansible-key888675944 -i /tmp/packer-provisioner-ansible782643367 /home/darkon/DarkonGH_infra/ansible/packer_app.yml
+    yandex:
+    yandex: PLAY [Install Ruby and Bundler] ************************************************
+    yandex:
+    yandex: TASK [Gathering Facts] *********************************************************
+    yandex: ok: [default]
+    yandex:
+    yandex: TASK [Install packages for app] ************************************************
+    yandex: changed: [default]
+    yandex:
+    yandex: PLAY RECAP *********************************************************************
+    yandex: default                    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+    yandex:
+==> yandex: Stopping instance...
+==> yandex: Deleting instance...
+    yandex: Instance has been deleted!
+==> yandex: Creating image: reddit-app-base-1630613651
+==> yandex: Waiting for image to complete...
+==> yandex: Success image create...
+==> yandex: Destroying boot disk...
+    yandex: Disk has been deleted!
+Build 'yandex' finished after 4 minutes 18 seconds.
+
+==> Wait completed after 4 minutes 18 seconds
+
+==> Builds finished. The artifacts of successful builds are:
+--> yandex: A disk image was created: reddit-app-base-1630613651 (id: fd8i00npgi61kun4ah1b) with family name reddit-app-base
+```
+
+Соберем стейдж окружение с помощью *terraform apply* на основе новых образов (необходимо изменить id образов в файле terraform.tfvars).
+```bash
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+external_ip_address_app = "62.84.115.153"
+external_ip_address_db = "62.84.115.7"
+internal_ip_address_db = "10.128.0.17"
+```
+
+Запустим ansible-playbook site.yml и убедимся в работе нашего приложения с dynamic inventory:
+
+```bash
+darkon@darkonVM:~/DarkonGH_infra/ansible (ansible-2)$ ansible-playbook site.yml
+
+PLAY [Configure MongoDB] **********************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************************
+ok: [dbserver]
+
+TASK [Change mongo config file] ***************************************************************************************************************************
+changed: [dbserver]
+
+RUNNING HANDLER [restart mongod] **************************************************************************************************************************
+changed: [dbserver]
+
+PLAY [Configure App] **************************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************************
+ok: [appserver]
+
+TASK [Add unit file for Puma] *****************************************************************************************************************************
+changed: [appserver]
+
+TASK [Load variable db_host for db_config.j2] *************************************************************************************************************
+ok: [appserver]
+
+TASK [debug] **********************************************************************************************************************************************
+ok: [appserver] => {
+    "db_host": "10.128.0.17"
+}
+
+TASK [Add config for DB connection] ***********************************************************************************************************************
+changed: [appserver]
+
+TASK [enable puma] ****************************************************************************************************************************************
+changed: [appserver]
+
+RUNNING HANDLER [reload puma] *****************************************************************************************************************************
+changed: [appserver]
+
+PLAY [Deploy App] *****************************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************************
+ok: [appserver]
+
+TASK [Fetch the latest version of application code] *******************************************************************************************************
+changed: [appserver]
+
+TASK [Bundle install] *************************************************************************************************************************************
+changed: [appserver]
+
+RUNNING HANDLER [restart puma] ****************************************************************************************************************************
+changed: [appserver]
+
+PLAY RECAP ************************************************************************************************************************************************
+appserver                  : ok=11   changed=7    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+dbserver                   : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0                   : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
