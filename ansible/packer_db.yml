@@ -3,32 +3,32 @@
   hosts: all
   become: true
   tasks:
-    - name: Install packages for db
-      apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-        state: present
-        update_cache: yes
+  - name: Install packages for db
+    apt:
+      name:
+        - apt-transport-https
+        - ca-certificates
+      state: present
+      update_cache: yes
 
-    - name: add key repo
-      ansible.builtin.apt_key:
-        url: https://www.mongodb.org/static/pgp/server-4.2.asc
-        state: present
+  - name: add key repo
+    ansible.builtin.apt_key:
+      url: https://www.mongodb.org/static/pgp/server-4.2.asc
+      state: present
 
-    - name: Add mongoDB repo
-      apt_repository:
-        repo: deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse
-        filename: /etc/apt/sources.list.d/mongodb-org-4.2.list
-        state: present
+  - name: Add mongoDB repo
+    apt_repository:
+      repo: deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse
+      filename: /etc/apt/sources.list.d/mongodb-org-4.2.list
+      state: present
 
-    - name: Install modngoDB
-      apt:
-        name: mongodb-org
-        state: present
-        update_cache: yes
+  - name: Install modngoDB
+    apt:
+      name: mongodb-org
+      state: present
+      update_cache: yes
 
-    - name: Enable mongodb service
-      systemd:
-        name: mongod
-        enabled: yes
+  - name: Enable mongodb service
+    systemd:
+      name: mongod
+      enabled: yes
