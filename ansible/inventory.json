@@ -2,14 +2,7 @@
     "all": {
         "children": [
             "app",
-            "db",
-            "ungrouped",
-            "localhost1"
-        ]
-    },
-    "localhost1": {
-        "hosts": [
-            "localhost"
+            "db"
         ]
     },
     "app": {
@@ -25,11 +18,11 @@
     "_meta": {
         "hostvars": {
             "appserver": {
-                "ansible_host": "178.154.220.97",
-                "db_host": "10.128.0.3"
+                "ansible_host": "62.84.113.38",
+                "db_host": "10.128.0.30"
             },
             "dbserver": {
-                "ansible_host": "84.201.172.156"
+                "ansible_host": "62.84.114.208"
             },
             "localhost": {
                 "ansible_host": "127.0.0.1"

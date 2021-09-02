@@ -2,14 +2,22 @@
 - name: Configure App
   hosts: app
   become: true
-  vars:
-   db_host: 10.128.0.31
+  #vars:
+  #  db_host: "{{db_host}}"
   tasks:
     - name: Add unit file for Puma
       copy:
         src: files/puma.service
         dest: /etc/systemd/system/puma.service
       notify: reload puma
+
+    - name: Load variable db_host for db_config.j2
+      include_vars:
+        file: vars.json
+        name: vars_from_json
+
+    - debug:
+        var: db_host
 
     - name: Add config for DB connection
       template:
@@ -24,7 +32,8 @@
     - name: Install git
       apt:
         name: git
-        install_recommends: yes
+        state: present
+        update_cache: yes
 
   handlers:
   - name: reload puma
