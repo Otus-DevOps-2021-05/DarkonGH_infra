@@ -993,7 +993,7 @@ ansible понимая, что ему на вход подается JSON-инв
 ### Провижининг в Packer
 
 Создадим плейбуки ansible/packer_app.yml и ansible/packer_db.yml на основе аналогичных bash-скриптов изпользующихся в конфигурации с Packer'ом.
-Заменим секции Зrovision в образах Packer'а: packer/app.json и packer/db.json на Ansible.
+Заменим секции Provision в образах Packer'а: packer/app.json и packer/db.json на Ansible.
 
 Запустим сборку образов Packer'ом:
 ```bash
@@ -1158,3 +1158,41 @@ PLAY RECAP *********************************************************************
 appserver                  : ok=11   changed=7    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 dbserver                   : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0                   : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
+
+
+## Домашнее задание №12 Ansible роли, управление настройками нескольких окружений и best practices (ДЗ №10 Написание Ansible ролей для управления конфигурацией сервисов и настройками хостов.)
+
+### Переносим плейбуки в раздельные роли
+
+Создадим роли app и db, а также используем коммьюнити роль nginx для настройки обратного прокси нашего приложения на 80й порт.
+Для генерации структуры каталогов с файлами роли воспользуемся командой *ansible-galaxy init*
+
+```bash
+$ ansible-galaxy init app
+$ ansible-galaxy init db
+```
+
+### Управление окружениями prod и stage при помощи Ansible
+
+Окружение по умолчанию - stage укажем в ansible.cfg, а для запуска окружения prod будем ипользовать:
+```bash
+ansible-playbook -i environments/prod/inventory deploy.yml
+```
+
+### Работа с Community-ролями
+
+Используем роль jdauphant.nginx и настроим обратное проксирование для нашего приложения с помощью nginx.
+Установка роли через файл зависимости:
+
+```bash
+ansible-galaxy install -r environments/stage/requirements.yml
+```
+
+### Самостоятельное задание
+
+ Для того чтобы в YC приложение было доступно на определенному порту, например nginx на 80 порту, должен использоваться nat на сетевом интерфейсе, он активирован в настройках модулей prod и stage.
+
+ В плейбуке app.yml добавим вызов роли jdauphant.nginx для установки  nginx на app.
+ теперь наше приложение при деплое доступно на 80 порту.
+
+ ### Ansible Vault
