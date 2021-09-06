@@ -1,0 +1,40 @@
+---
+- name: Configure App
+  hosts: app
+  become: true
+  #vars:
+  #  db_host: "{{db_host}}"
+  tasks:
+    - name: Add unit file for Puma
+      copy:
+        src: files/puma.service
+        dest: /etc/systemd/system/puma.service
+      notify: reload puma
+
+    - name: Load variable db_host for db_config.j2
+      include_vars:
+        file: vars.json
+        name: vars_from_json
+
+    - debug:
+        var: db_host
+
+    - name: Add config for DB connection
+      template:
+        src: templates/db_config.j2
+        dest: /home/ubuntu/db_config
+        owner: ubuntu
+        group: ubuntu
+
+    - name: enable puma
+      systemd: name=puma enabled=yes
+
+    #- name: Install git
+    #  apt:
+    #    name: git
+    #    state: present
+    #    update_cache: yes
+
+  handlers:
+  - name: reload puma
+    systemd: name=puma state=restarted

@@ -25,25 +25,27 @@ resource "yandex_compute_instance" "app" {
     ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
 
-  connection {
-    type  = "ssh"
-    host  = yandex_compute_instance.app.network_interface.0.nat_ip_address
-    user  = "ubuntu"
-    agent = false
-    # путь до приватного ключа
-    private_key = file(var.private_key_path)
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "echo DATABASE_URL=${var.db_ip} > dburl.txt"
-    ]
-  }
-  provisioner "file" {
-    source      = var.path_puma_service
-    destination = "/tmp/puma.service"
-  }
+  #connection {
+  #  type  = "ssh"
+  #  host  = yandex_compute_instance.app.network_interface.0.nat_ip_address
+  #  user  = "ubuntu"
+  #  agent = false
+  #  # путь до приватного ключа
+  #  private_key = file(var.private_key_path)
+  #}
 
-  provisioner "remote-exec" {
-    script = var.path_deploy_script
-  }
+  #provisioner "remote-exec" {
+  #  inline = [
+  #    "echo DATABASE_URL=${var.db_ip} > dburl.txt"
+  #  ]
+  #}
+
+  #provisioner "file" {
+  #  source      = var.path_puma_service
+  #  destination = "/tmp/puma.service"
+  #}
+
+  #provisioner "remote-exec" {
+  #  script = var.path_deploy_script
+  #}
 }

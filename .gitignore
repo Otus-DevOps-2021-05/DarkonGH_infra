@@ -10,3 +10,4 @@ backend-config
 .vscode/
 env_tf_state
 inventory.py
+*.retry

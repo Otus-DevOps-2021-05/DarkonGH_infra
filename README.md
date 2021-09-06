@@ -99,7 +99,7 @@ debug1: Local connections to 10.128.0.13:22022 forwarded to remote address socks
 Данный ключ не подходит.
 
 Пересоздадим *bastion* VM, т.к. был утрачен доступ из-за ошибки внесенной в sshd_config.
-Как выяснилось, при повтороной настройке, я ранее внес команду *GatewayPorts yes* не в тот конфиг файл,
+Как выяснилось, при повторной настройке, я ранее внес команду *GatewayPorts yes* не в тот конфиг файл,
 надо вносить в **ssh_config**. После этого команда: *ssh -fNv -L 22022:localhost:22 10.128.0.12* запустилась на всех интерфейсах
 
 ```
@@ -144,7 +144,7 @@ someinternalhost
 appuser@someinternalhost:~$
 ```
 
-#### еще один варинт подключения одной командой
+#### еще один вариант подключения одной командой
 
 Введем команду *ssh -A appuser@178.154.231.92 ssh 10.128.0.12*.
 
@@ -164,10 +164,10 @@ Linux someinternalhost 4.4.0-142-generic #168-Ubuntu SMP Wed Jan 16 21:00:45 UTC
 
 ### Дополнительное задание 1 ssh
 
-Настройка алиаса  someinternalhost
+Настройка алиаса someinternalhost
 
 Создадим файл *~/.ssh/config*
-Добавим парметры удаленного хоста:
+Добавим параметры удаленного хоста:
 
 ```
 Host someinternalhost
@@ -193,7 +193,7 @@ appuser@someinternalhost:~$
 
 ### Установка VPN-сервера для серверов Yandex.Cloud
 
-Уснатовка vpn будет производится на Ubuntu 18.04.5 LTS, для этого внесем изменения в скрипт **/vpn-bastion/setupvpn.sh**.
+Установка vpn будет производится на Ubuntu 18.04.5 LTS, для этого внесем изменения в скрипт **/vpn-bastion/setupvpn.sh**.
 Для внесения изменений в первоначальный скрипт использовалась статья <https://www.howtoforge.com/how-to-setup-a-vpn-server-using-pritunl-on-ubuntu-1804/>
 
 После настройки vpn и подключения, проверяем подключение к someinternalhost с 10.128.0.12
@@ -218,7 +218,7 @@ appuser@someinternalhost:~$
 Для создания подписанного сертификата при помощи сервиса Let's Encrypt используем доменное имя на основе IP адреса, сервиса sslip.io:
 *178-154-231-92.sslip.io*
 Далее производим настройку certbot согласно инструкции <https://certbot.eff.org/lets-encrypt/ubuntubionic-other>
-После настройки certbot проверяем, что у нас работает безопастное подключение в браузере <https://178-154-231-92.sslip.io/#>
+После настройки certbot проверяем, что у нас работает безопасное подключение в браузере <https://178-154-231-92.sslip.io/#>
 
 В настройках pritunl vpn сервера указываем Lets Encrypt Domain: *178-154-231-92.sslip.io*
 
@@ -260,7 +260,7 @@ appuser@someinternalhost:~$
 
 В процессе сделано:
 
-* Создан сервисный аккаунт для Packer в Yandex Cloud и делигированы права.
+* Создан сервисный аккаунт для Packer в Yandex Cloud и делегированы права.
 * Создание шаблона для Packer и его настройка (секции билдера и провиженеров)
 * Собран образ с предустановленными ruby и mongodb
 * Проверка загрузки ВМ из созданного образа. Проверка установки приложения
@@ -281,7 +281,7 @@ appuser@someinternalhost:~$
 ### Самостоятельные задания
 
 * Определим переменную для приватного ключа использующегося в определении подключения для
-провижинеров (connection).
+провиженеров (connection).
 
 ```
 variable "private_key_path" {
@@ -306,7 +306,7 @@ variable "zone" {
 
 * Настройка балансировщика в Yandex Cloud. Конфигурационный файл lb.tf. При обращении к адресу балансировщика должно открываться задеплоенное приложение.
 * Добавление второго инстанса в *main.tf*
-* Добавим вывод IP Адреса балансирощика в output переменную:
+* Добавим вывод IP Адреса балансировщика в output переменную:
 
 ```
 Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
@@ -320,9 +320,9 @@ lb_ip_address = tolist([
 ])
 ```
 
-* Проблемы конфигурации деплоя приложения на два инстанса - т.к. у нас в развертываемом приложении используется база данных MongoDB на каждом инстанесе, то получается должно быть настроено зеркалирование или репликация данных между БД, для корректной работы приложения с балансировщиком. А также присутсвует избыточная конфигурация в коде.
+* Проблемы конфигурации деплоя приложения на два инстанса - т.к. у нас в развертываемом приложении используется база данных MongoDB на каждом инстансе, то получается должно быть настроено зеркалирование или репликация данных между БД, для корректной работы приложения с балансировщиком. А также присутствует избыточная конфигурация в коде.
 
-* Описание создания идентичных инстантов через парметр count, в *main.tf* добавим:
+* Описание создания идентичных инстансов через параметр count, в *main.tf* добавим:
 
 ```
 resource "yandex_compute_instance" "app" {
@@ -382,7 +382,7 @@ yc load-balancer target-group list
 
 ### Создание ресурса IP адрес и пример неявной зависимости
 
-добавим в *main.tf* следующую конрфигурацию:
+добавим в *main.tf* следующую конфигурацию:
 
 ```
 resource "yandex_vpc_network" "app-network" {
@@ -406,7 +406,7 @@ network_interface {
   }
 ```
 
-Неявная зависимость видна при созданиии инстанса, terraform apply, сначала создаются ресурсы сети и только потом создается VM:
+Неявная зависимость видна при создании инстанса, terraform apply, сначала создаются ресурсы сети и только потом создается VM:
 
 ```
 yandex_vpc_network.app-network: Creating...
@@ -431,7 +431,7 @@ external_ip_address_app = [
 
 ### Структуризация ресурсов
 
-#### Подготвока образов диска Packer'ом
+#### Подготовка образов диска Packer'ом
 
 Вынесем БД на отдельный инстанс VM, подготовим конфигурационный файл *db.json* пакера и сформируем образ с предустановленной БД:
 
@@ -541,7 +541,7 @@ Jul 30 06:55:38 fhmcsgp9mu64gq50458j systemd[1]: Started MongoDB Database Server
 Создадим модули app и db на основе написанной ранее конфигурации.
 
 Для использования модулем загрузим их из указанного источника *source* (в нашем случае локальная папка).
-Выполним компнуд для загрузки модулей:
+Выполним команду для загрузки модулей:
 
 ```
 terraform get
@@ -640,9 +640,9 @@ Jul 30 15:20:13 fhmq47f04vt84pbkot1r systemd[1]: Started MongoDB Database Server
 
 ### Переиспользование модулей
 
-Создадим конфигруацию stage и prod с учетом использования общих модулей, принцип DRY (Don't repeat youself).
+Создадим конфигурацию stage и prod с учетом использования общих модулей, принцип DRY (Don't repeat youself).
 Скопируем файлы: *key_tf.json  main.tf  outputs.tf terraform.tfvars  terraform.tfvars.example  variables.tf*  из папки terraform/ в
-terraform/stage и нициализируем terraform в каждой папке:
+terraform/stage и инициализируем terraform в каждой папке:
 
 ```
 darkon@darkonVM:~/DarkonGH_infra/terraform/stage (terraform-2)$ terraform init
@@ -689,7 +689,7 @@ commands will detect it and remind you to do so if necessary.
 
 #### Настройка и хранение стейт файлов на удаленном бэкенде (Yandex Object Storage) для stage и prod
 
-Для настройки воспользуемcя [инструкцией](<https://cloud.yandex.ru/docs/solutions/infrastructure-management/terraform-state-storage>)
+Для настройки воспользуемся [инструкцией](<https://cloud.yandex.ru/docs/solutions/infrastructure-management/terraform-state-storage>)
 
 Создадим s3 бакет - terraform-yc-s3, с правами на чтение и запись, для сервисного аккаунта.
 
@@ -741,18 +741,18 @@ Terraform has been successfully initialized!
 
 #### Одновременный запуск применения конфигурации
 
-В ходе тестов с Yandex Cloud выяснилось, что блоикровка применения конфигурации не работает. Т.к. нет поддержки DynamoDb.
+В ходе тестов с Yandex Cloud выяснилось, что блокировка применения конфигурации не работает. Т.к. нет поддержки DynamoDb.
 Для примера в AWS S3 необходимо создать dyanamodb_table в существующей DaynamoDB, после этого включится блокировка удаленного стейт файла.
 
 ```
 Stores the state as a given key in a given bucket on Amazon S3. This backend also supports state locking and consistency checking via Dynamo DB, which can be enabled by setting the dynamodb_table field to an existing DynamoDB table name. A single DynamoDB table can be used to lock multiple remote state files. Terraform generates key names that include the values of the bucket and key variables.
 ```
 
-### Задание с ** Провижинеры для app и db модуля
+### Задание с ** Провижионеры для app и db модуля
 
 #### Добавление провижионеров для db VM
 
-В конфигрукции mongod.conf указана прослушка сервиса только на Ip 127.0.0.1. Для замены на 0.0.0.0 есть несколько вариантов. 1. можно запечь образ пакером с другой конфигурационным файлом mongod.conf и использовать новый образ в терраформе. 2. можно заменить конфигурационный файл mongod.conf через провижионер в терраформе.
+В конфигурации mongod.conf указана прослушка сервиса только на Ip 127.0.0.1. Для замены на 0.0.0.0 есть несколько вариантов. 1. можно запечь образ пакером с другой конфигурационным файлом mongod.conf и использовать новый образ в терраформе. 2. можно заменить конфигурационный файл mongod.conf через провижионер в терраформе.
 Воспользуемся вторым способом, добавим в модуль db main.tf:
 
 ```
@@ -867,7 +867,7 @@ Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: * Listening on tcp://0.0.0.0:92
 Aug 05 15:08:53 fhmh5qthhapig97i0lvt bash[1729]: Use Ctrl-C to stop
 ```
 
-## Домашнее задание №8 Управление конфигурацией. Знакомство с Ansible (ДЗ №8 Написание Ansible плейбуков на основе имеющихся bash скриптов)
+## Домашнее задание №10 Управление конфигурацией. Знакомство с Ansible (ДЗ №8 Написание Ansible плейбуков на основе имеющихся bash скриптов)
 
 
 ### Написание плейбука деплоя приложения
@@ -916,7 +916,7 @@ terraform state pull
 ```
 Напишем скрипт обработки данного файл и сохраним inventory.json в динамическом формате. Сам файл inventory.json для работы ansible не нужен, он нужен только для просмотра содержания.
 В тоже время сам скрипт *dynamic_inventory_json.py* будет входным файлом для JSON-инвентори.
-Для того чтобы команда *ansible all -m ping* выполнилась корректно, в asible.cfg укажим параметр.
+Для того чтобы команда *ansible all -m ping* выполнилась корректно, в ansible.cfg укажем параметр.
 ```
 inventory = ./dynamic_inventory_json.py
 ```
@@ -924,7 +924,7 @@ ansible понимая, что ему на вход подается JSON-инв
 
 #### Отличия статического и динамического JSON
 
-В статическом JSON хосты перечислены списком в формате "ключ : значение", даже если значение null, а в динамическом JSON хосты представлены списком в квадратных скобках, в виде только имен "ключ". При этом значения вынесены в отдельную секцию _meta/hostvars. Таким образом сначала идут логические группировки хостов по группам  без повторения значений если хост входт в разные групп одновременно.
+В статическом JSON хосты перечислены списком в формате "ключ : значение", даже если значение null, а в динамическом JSON хосты представлены списком в квадратных скобках, в виде только имен "ключ". При этом значения вынесены в отдельную секцию _meta/hostvars. Таким образом сначала идут логические группировки хостов по группам  без повторения значений если хост входит в разные групп одновременно.
 
 Пример статического JSON:
 ```
@@ -971,4 +971,190 @@ ansible понимая, что ему на вход подается JSON-инв
         }
     }
 }
+```
+
+## Домашнее задание №11 Продолжение знакомства с Ansible: templates, handlers, dynamic inventory, vault, tags (ДЗ №9 Управление настройками хостов и деплой приложения при помощи Ansible.)
+
+### Основное задание
+
+В результате работы над домашним заданием, мы подготовили:
+1. плейбук *reddit_app_one_play.yml* с одним сценарием, сразу на все хосты, выбор тасков осуществляется по тегам и требуется указывать имя хоста. Необходимо помнить какой тег относится к какому хосту.
+2. плейбук *reddit_app_multiple_plays.yml* с несколькими сценариями в одному плейбуке, таким образом, каждый сценарий связан с конкретным хостом и тегом, таким обращом достаточно указать нужный тег и сценарий сам сработает на нужном хосте.
+3. плейбук *site.yml*, который является группировкой для трех отдельных плейбков. Данный подход позволяет уменьшить размер отдельных плейбуков и разделить их логически на несколько.
+
+### Задание со * - использование динамического инвентори в плейбуков
+
+Доработаем скрип динамического инвентори dynamic_inventory_json.py до версии 2 (dynamic_inventory_json2.py):
+1. добавим загрузку значения переменной окружения TF_STATE из файла *env_tf_state.env*, если файл не найден, то используется TF_STATE из шела
+2. В полученных данных из terraform state pull? выгрузим внутренний IP адрес mongoDB? в файл vars.json с переменной импортируемой в ansible
+
+Таким образом при запуске прейбука *ansible-playbook site.yml* нам теперь не требуется менять IP адреса в переменных самого плейбука, т.к. у нас динамически формируемая инфраструктура.
+
+### Провижининг в Packer
+
+Создадим плейбуки ansible/packer_app.yml и ansible/packer_db.yml на основе аналогичных bash-скриптов изпользующихся в конфигурации с Packer'ом.
+Заменим секции Зrovision в образах Packer'а: packer/app.json и packer/db.json на Ansible.
+
+Запустим сборку образов Packer'ом:
+```bash
+packer build -var-file=packer/variables.json packer/app.json
+
+yandex: output will be in this color.
+
+==> yandex: Creating temporary ssh key for instance...
+==> yandex: Using as source image: fd869u2laf181s38k2cr (name: "ubuntu-1604-lts-1612430962", family: "ubuntu-1604-lts")
+==> yandex: Use provided subnet id e9bhddb5c34atpg4rd2j
+==> yandex: Creating disk...
+==> yandex: Creating instance...
+==> yandex: Waiting for instance with id fhmhl7q55akrb7uhi98g to become active...
+    yandex: Detected instance IP: 62.84.113.75
+==> yandex: Using SSH communicator to connect: 62.84.113.75
+==> yandex: Waiting for SSH to become available...
+==> yandex: Connected to SSH!
+==> yandex: Provisioning with Ansible...
+    yandex: Setting up proxy adapter for Ansible....
+==> yandex: Executing Ansible: ansible-playbook -e packer_build_name="yandex" -e packer_builder_type=yandex --ssh-extra-args '-o IdentitiesOnly=yes' -e ansible_ssh_private_key_file=/tmp/ansible-key888675944 -i /tmp/packer-provisioner-ansible782643367 /home/darkon/DarkonGH_infra/ansible/packer_app.yml
+    yandex:
+    yandex: PLAY [Install Ruby and Bundler] ************************************************
+    yandex:
+    yandex: TASK [Gathering Facts] *********************************************************
+    yandex: ok: [default]
+    yandex:
+    yandex: TASK [Install packages for app] ************************************************
+    yandex: changed: [default]
+    yandex:
+    yandex: PLAY RECAP *********************************************************************
+    yandex: default                    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+    yandex:
+==> yandex: Stopping instance...
+==> yandex: Deleting instance...
+    yandex: Instance has been deleted!
+==> yandex: Creating image: reddit-app-base-1630613651
+==> yandex: Waiting for image to complete...
+==> yandex: Success image create...
+==> yandex: Destroying boot disk...
+    yandex: Disk has been deleted!
+Build 'yandex' finished after 4 minutes 18 seconds.
+
+==> Wait completed after 4 minutes 18 seconds
+
+==> Builds finished. The artifacts of successful builds are:
+--> yandex: A disk image was created: reddit-app-base-1630613651 (id: fd8i00npgi61kun4ah1b) with family name reddit-app-base
+```
+
+```bash
+packer build -var-file=packer/variables.json  packer/db.json
+
+yandex: output will be in this color.
+
+==> yandex: Creating temporary ssh key for instance...
+==> yandex: Using as source image: fd869u2laf181s38k2cr (name: "ubuntu-1604-lts-1612430962", family: "ubuntu-1604-lts")
+==> yandex: Use provided subnet id e9bhddb5c34atpg4rd2j
+==> yandex: Creating disk...
+==> yandex: Creating instance...
+==> yandex: Waiting for instance with id fhmhl7q55akrb7uhi98g to become active...
+    yandex: Detected instance IP: 62.84.113.75
+==> yandex: Using SSH communicator to connect: 62.84.113.75
+==> yandex: Waiting for SSH to become available...
+==> yandex: Connected to SSH!
+==> yandex: Provisioning with Ansible...
+    yandex: Setting up proxy adapter for Ansible....
+==> yandex: Executing Ansible: ansible-playbook -e packer_build_name="yandex" -e packer_builder_type=yandex --ssh-extra-args '-o IdentitiesOnly=yes' -e ansible_ssh_private_key_file=/tmp/ansible-key888675944 -i /tmp/packer-provisioner-ansible782643367 /home/darkon/DarkonGH_infra/ansible/packer_app.yml
+    yandex:
+    yandex: PLAY [Install Ruby and Bundler] ************************************************
+    yandex:
+    yandex: TASK [Gathering Facts] *********************************************************
+    yandex: ok: [default]
+    yandex:
+    yandex: TASK [Install packages for app] ************************************************
+    yandex: changed: [default]
+    yandex:
+    yandex: PLAY RECAP *********************************************************************
+    yandex: default                    : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+    yandex:
+==> yandex: Stopping instance...
+==> yandex: Deleting instance...
+    yandex: Instance has been deleted!
+==> yandex: Creating image: reddit-app-base-1630613651
+==> yandex: Waiting for image to complete...
+==> yandex: Success image create...
+==> yandex: Destroying boot disk...
+    yandex: Disk has been deleted!
+Build 'yandex' finished after 4 minutes 18 seconds.
+
+==> Wait completed after 4 minutes 18 seconds
+
+==> Builds finished. The artifacts of successful builds are:
+--> yandex: A disk image was created: reddit-app-base-1630613651 (id: fd8i00npgi61kun4ah1b) with family name reddit-app-base
+```
+
+Соберем стейдж окружение с помощью *terraform apply* на основе новых образов (необходимо изменить id образов в файле terraform.tfvars).
+```bash
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+external_ip_address_app = "62.84.115.153"
+external_ip_address_db = "62.84.115.7"
+internal_ip_address_db = "10.128.0.17"
+```
+
+Запустим ansible-playbook site.yml и убедимся в работе нашего приложения с dynamic inventory:
+
+```bash
+darkon@darkonVM:~/DarkonGH_infra/ansible (ansible-2)$ ansible-playbook site.yml
+
+PLAY [Configure MongoDB] **********************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************************
+ok: [dbserver]
+
+TASK [Change mongo config file] ***************************************************************************************************************************
+changed: [dbserver]
+
+RUNNING HANDLER [restart mongod] **************************************************************************************************************************
+changed: [dbserver]
+
+PLAY [Configure App] **************************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************************
+ok: [appserver]
+
+TASK [Add unit file for Puma] *****************************************************************************************************************************
+changed: [appserver]
+
+TASK [Load variable db_host for db_config.j2] *************************************************************************************************************
+ok: [appserver]
+
+TASK [debug] **********************************************************************************************************************************************
+ok: [appserver] => {
+    "db_host": "10.128.0.17"
+}
+
+TASK [Add config for DB connection] ***********************************************************************************************************************
+changed: [appserver]
+
+TASK [enable puma] ****************************************************************************************************************************************
+changed: [appserver]
+
+RUNNING HANDLER [reload puma] *****************************************************************************************************************************
+changed: [appserver]
+
+PLAY [Deploy App] *****************************************************************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************************
+ok: [appserver]
+
+TASK [Fetch the latest version of application code] *******************************************************************************************************
+changed: [appserver]
+
+TASK [Bundle install] *************************************************************************************************************************************
+changed: [appserver]
+
+RUNNING HANDLER [restart puma] ****************************************************************************************************************************
+changed: [appserver]
+
+PLAY RECAP ************************************************************************************************************************************************
+appserver                  : ok=11   changed=7    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+dbserver                   : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0                   : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```

@@ -26,25 +26,25 @@ resource "yandex_compute_instance" "db" {
   ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
 
-   connection {
-    type  = "ssh"
-    host  = yandex_compute_instance.db.network_interface.0.nat_ip_address
-    user  = "ubuntu"
-    agent = false
-    # путь до приватного ключа
-    private_key = file(var.private_key_path)
-  }
+  # connection {
+  #  type  = "ssh"
+  #  host  = yandex_compute_instance.db.network_interface.0.nat_ip_address
+  #  user  = "ubuntu"
+  #  agent = false
+  #  # путь до приватного ключа
+  #  private_key = file(var.private_key_path)
+  #}
 
-  provisioner "file" {
-    source      = var.path_mongod_conf
-    destination = "/tmp/mongod.conf"
-  }
+  #provisioner "file" {
+  #  source      = var.path_mongod_conf
+  #  destination = "/tmp/mongod.conf"
+  #}
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo systemctl stop mongod",
-      "sudo mv /tmp/mongod.conf /etc/mongod.conf",
-      "sudo systemctl start mongod"
-    ]
-  }
+  #provisioner "remote-exec" {
+  #  inline = [
+  #    "sudo systemctl stop mongod",
+  #    "sudo mv /tmp/mongod.conf /etc/mongod.conf",
+  #    "sudo systemctl start mongod"
+  #  ]
+  #}
 }
