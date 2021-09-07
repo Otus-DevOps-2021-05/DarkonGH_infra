@@ -1196,3 +1196,27 @@ ansible-galaxy install -r environments/stage/requirements.yml
  теперь наше приложение при деплое доступно на 80 порту.
 
  ### Ansible Vault
+
+Создадим произвольный ключ шифрования и разместим его вне репозитория, и укажим его расположение в ansible.cfg
+*vault_password_file = ~/.ansible/vault.key*
+
+Запустим плейбук site.yml, в процессе работы которого будет вызван плейбук user.yml, который мы создали ранее, и будут добавлены пользователи admin и
+qauser  для хостов stage окружения.
+Для активации доступа по логину/паролю, требуется изменить настройки sshd на *PasswordAuthentication yes*  и перезапустить sshd.
+
+
+### Задание со *. Работа с динамическим инвентори
+
+Для того чтобы динамическое инвентори понимало из какого terraform state - prod или stage считать IP адреса, введем следующую логику.
+в файле env_tf_state.env задан путь к terraform state stage окружения, а если задана переменная окружения TF_STATE то из нее читается путь к terraform state prod окружения.
+При этом для запуска плейбука на stage окружении выполняем команду:
+```bash
+$ ansible-playbook  playbooks/site.yml
+```
+
+а для запуска на prod:
+```bash
+$ ansible-playbook -i environments/prod/dynamic_inventory_json3.py  playbooks/site.yml
+```
+
+### Задание с **. Настроейка TravisCI

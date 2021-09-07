@@ -6,8 +6,8 @@
    dest: /etc/systemd/system/puma.service
   notify: reload puma
 
-#- debug:
-#    var: db_host
+- debug:
+    var: db_host
 
 - name: Add config for DB connection
   template:

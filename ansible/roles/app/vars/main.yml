@@ -1,5 +1,5 @@
 ---
-# vars file for app
+#vars file for app
 #- name: Load variable db_host for db_config.j2
 #  include_vars:
 #   file: vars.json

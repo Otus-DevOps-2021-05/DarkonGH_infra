@@ -12,3 +12,5 @@ env_tf_state
 inventory.py
 *.retry
 jdauphant.nginx
+vault.key
+work.log
