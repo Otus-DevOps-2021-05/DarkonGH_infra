@@ -1204,12 +1204,12 @@ ansible-galaxy install -r environments/stage/requirements.yml
 qauser  для хостов stage окружения.
 Для активации доступа по логину/паролю, требуется изменить настройки sshd на *PasswordAuthentication yes*  и перезапустить sshd.
 
-
 ### Задание со *. Работа с динамическим инвентори
 
-Для того чтобы динамическое инвентори понимало из какого terraform state - prod или stage считать IP адреса, введем следующую логику.
-в файле env_tf_state.env задан путь к terraform state stage окружения, а если задана переменная окружения TF_STATE то из нее читается путь к terraform state prod окружения.
-При этом для запуска плейбука на stage окружении выполняем команду:
+Для того чтобы динамическое инвентори понимало из какого terraform state - *prod* или *stage* считать IP адреса, введем следующую логику.
+в файле env_tf_state.env задан путь к terraform state *stage* окружения, а если задана переменная окружения TF_STATE то из нее читается путь к terraform state *prod* окружения. Приоритетным является переменная окружения TF_STATE, а не файл env_tf_state.env. Для работы с *stage* окружением необходимо обязательно почистить переменную окружения TF_STATE командой *unset TF_STATE*.
+
+Для запуска плейбука на stage окружении выполняем команду:
 ```bash
 $ ansible-playbook  playbooks/site.yml
 ```
@@ -1223,3 +1223,5 @@ $ ansible-playbook -i environments/prod/dynamic_inventory_json3.py  playbooks/si
 
 Начал делать задание, подключил на сайте TravisCI доступ к GitHub и сделал запрос на доступ к репозиторию https://github.com/Otus-DevOps-2021-05/DarkonGH_infra, обратился к преподавателю Владимиру Дроздецкому за подтверждением доступа. В результате Владимир сказал надо настраивать не TravisCI, а GitHub Action. При настройке GitHub Action тоже не все однозначно, после создания workflow необходимо сделать Commit и PR.
 В обоих случаях абсолютно не ясно, как настраивать CI. Поэтому задание с ** дальше делать не стал.
+
+UPD: Добавил workflow terraform  из коробки, сделал commit && PR, посмотрим что получится.
