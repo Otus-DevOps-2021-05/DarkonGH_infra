@@ -23,8 +23,8 @@ if terraform_location_env == False:
     except FileNotFoundError:
         file_log.write(str(datetime.datetime.now()) + " Файл env_tf_state.env не обнаружен в рабочей директории, завершаем работу" + "\n")
         time.sleep(3)
-
-file_log.close
+else:
+    file_log.write(str(datetime.datetime.now()) + " Переменная окружения TF_STATE прочитана, значение: " + str(terraform_location_env) + "\n")
 
 if terraform_location_env != False and len(sys.argv) > 1 and sys.argv[1] == '--list':
     tf_state_pull_output = subprocess.run(["terraform", "state", "pull"], capture_output=True , cwd=terraform_location_env)
@@ -36,5 +36,12 @@ if terraform_location_env != False and len(sys.argv) > 1 and sys.argv[1] == '--l
     file.write(json.dumps(inventory_json, indent=4))
     file.close()
 
+    file_log.write(str(datetime.datetime.now()) + " Динамический инвентори сформирован" + json.dumps(inventory_json) + "\n")
+    file_log.write(str(datetime.datetime.now()) + " Завершение работы \n")
+    file_log.close
+
     #print to stdout for ansible
     print(json.dumps(inventory_json, indent=4))
+else:
+    file_log.write(str(datetime.datetime.now()) + " Завершение работы \n")
+    file_log.close
