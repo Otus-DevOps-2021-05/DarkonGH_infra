@@ -1,0 +1,16 @@
+---
+#db_host: 10.128.0.6
+#vars file for app
+#- name: Load variable db_host for db_config.j2
+#  include_vars:
+#   file: vars.json
+ #  name: vars_from_json
+
+
+nginx_sites:
+    default:
+        - listen 80
+        - server_name "reddit"
+        - location / {
+            proxy_pass http://127.0.0.1:9292;
+            }
