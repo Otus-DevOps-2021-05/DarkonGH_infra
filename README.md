@@ -1225,3 +1225,31 @@ $ ansible-playbook -i environments/prod/dynamic_inventory_json3.py playbooks/sit
 В обоих случаях абсолютно не ясно, как настраивать CI. Поэтому задание с ** дальше делать не стал.
 
 UPD: Добавил workflow terraform из коробки, сделал commit && PR, посмотрим что получится.
+
+
+##  Домашнее задание №13 Локальная разработка Ansible ролей с Vagrant. Тестирование конфигурации. (ДЗ №11 Доработка имеющихся ролей локально с использование Vagrant)
+
+### Работа с Vagrant
+
+Создание окружения командой
+```
+Vagrant up
+```
+
+Удаление окружения
+```
+vagrant destroy -f
+```
+
+Статус VMs:
+```
+Vagrant status
+```
+
+Подключение по SSH
+```
+vagrant ssh appserver
+vagrant ssh dbserver
+```
+
+### Задание со *
