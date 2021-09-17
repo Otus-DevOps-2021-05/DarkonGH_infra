@@ -1253,3 +1253,14 @@ vagrant ssh dbserver
 ```
 
 ### Задание со *
+
+для настройки проксирования роли nginx необзодимо добавить перемененные nginx_sites в секцию extra_vats провижининга appserve, файла Vagrantfile.
+
+``` yaml
+ansible.extra_vars = {
+        "deploy_user" => "ubuntu",
+        nginx_sites: {
+         default: [ 'listen 80', 'server_name "reddit"', 'location / { proxy_pass http://127.0.0.1:9292; }' ]
+        }
+      }
+```
