@@ -22,3 +22,5 @@ work.log
 .molecule
 .cache
 .pytest_cache
+
+ansible/venv

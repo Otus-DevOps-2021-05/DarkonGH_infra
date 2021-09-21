@@ -1235,6 +1235,9 @@ UPD: Добавил workflow terraform из коробки, сделал commit 
 ```
 Vagrant up
 ```
+В результате выполнения команды создаюся VM в Virtualbox и накатываюся плейбуки, создается локальное тестовое окружения.
+Приложение доступно на `http://10.10.10.20:9292`.
+
 
 Удаление окружения
 ```
@@ -1263,4 +1266,207 @@ ansible.extra_vars = {
          default: [ 'listen 80', 'server_name "reddit"', 'location / { proxy_pass http://127.0.0.1:9292; }' ]
         }
       }
+```
+Теперь приложение доступно на `http://10.10.10.20` (с использование роли nginx).
+
+
+### Тестирование ролей
+
+Выполним тестирование роли db
+
+```bash
+(venv) darkon@darkonVM:~/DarkonGH_infra/ansible/roles/db (ansible-4)$ molecule test
+--> Validating schema /home/darkon/DarkonGH_infra/ansible/roles/db/molecule/default/molecule.yml.
+Validation completed successfully.
+--> Test matrix
+
+└── default
+    ├── lint
+    ├── dependency
+    ├── cleanup
+    ├── destroy
+    ├── syntax
+    ├── create
+    ├── prepare
+    ├── converge
+    ├── idempotence
+    ├── side_effect
+    ├── verify
+    ├── cleanup
+    └── destroy
+
+--> Scenario: 'default'
+--> Action: 'lint'
+--> Executing Yamllint on files found in /home/darkon/DarkonGH_infra/ansible/roles/db/...
+Lint completed successfully.
+--> Executing Flake8 on files found in /home/darkon/DarkonGH_infra/ansible/roles/db/molecule/default/tests/...
+Lint completed successfully.
+--> Executing Ansible Lint on /home/darkon/DarkonGH_infra/ansible/roles/db/molecule/default/playbook.yml...
+Lint completed successfully.
+--> Scenario: 'default'
+--> Action: 'dependency'
+Skipping, missing the requirements file.
+--> Scenario: 'default'
+--> Action: 'cleanup'
+Skipping, cleanup playbook not configured.
+--> Scenario: 'default'
+--> Action: 'destroy'
+
+    PLAY [Destroy] *****************************************************************
+
+    TASK [Destroy molecule instance(s)] ********************************************
+    changed: [localhost] => (item=instance)
+
+    TASK [Populate instance config] ************************************************
+    ok: [localhost]
+
+    TASK [Dump instance config] ****************************************************
+    changed: [localhost]
+
+    PLAY RECAP *********************************************************************
+    localhost                  : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+--> Scenario: 'default'
+--> Action: 'syntax'
+
+    playbook: /home/darkon/DarkonGH_infra/ansible/roles/db/molecule/default/playbook.yml
+--> Scenario: 'default'
+--> Action: 'create'
+
+    PLAY [Create] ******************************************************************
+
+    TASK [Create molecule instance(s)] *********************************************
+    changed: [localhost] => (item=instance)
+
+    TASK [Populate instance config dict] *******************************************
+    ok: [localhost] => (item=None)
+    ok: [localhost]
+
+    TASK [Convert instance config dict to a list] **********************************
+    ok: [localhost]
+
+    TASK [Dump instance config] ****************************************************
+    changed: [localhost]
+
+    PLAY RECAP *********************************************************************
+    localhost                  : ok=4    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+--> Scenario: 'default'
+--> Action: 'prepare'
+
+    PLAY [Prepare] *****************************************************************
+
+    TASK [Install python for Ansible] **********************************************
+    ok: [instance]
+
+    PLAY RECAP *********************************************************************
+    instance                   : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+--> Scenario: 'default'
+--> Action: 'converge'
+
+    PLAY [Converge] ****************************************************************
+
+    TASK [Gathering Facts] *********************************************************
+    ok: [instance]
+
+    TASK [db : Show info about the env this host belongs to] ***********************
+    ok: [instance] => {
+        "msg": "This host is in local environment!!!"
+    }
+
+    TASK [db : Add apt_key] ********************************************************
+    changed: [instance]
+
+    TASK [db : Add mongoDB repo] ***************************************************
+    changed: [instance]
+
+    TASK [db : Install modngoDB] ***************************************************
+ [WARNING]: Could not find aptitude. Using apt-get instead
+
+    changed: [instance]
+
+    TASK [db : Enable mongodb service] *********************************************
+    changed: [instance]
+
+    TASK [db : Change mongo config file] *******************************************
+    changed: [instance]
+
+    RUNNING HANDLER [db : restart mongod] ******************************************
+    changed: [instance]
+
+    PLAY RECAP *********************************************************************
+    instance                   : ok=8    changed=6    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+--> Scenario: 'default'
+--> Action: 'idempotence'
+Idempotence completed successfully.
+--> Scenario: 'default'
+--> Action: 'side_effect'
+Skipping, side effect playbook not configured.
+--> Scenario: 'default'
+--> Action: 'verify'
+--> Executing Testinfra tests found in /home/darkon/DarkonGH_infra/ansible/roles/db/molecule/default/tests/...
+    ============================= test session starts ==============================
+    platform linux -- Python 3.8.10, pytest-6.2.5, py-1.10.0, pluggy-1.0.0
+    rootdir: /home/darkon/DarkonGH_infra/ansible/roles/db/molecule/default
+    plugins: testinfra-3.0.6
+collected 2 items
+
+    tests/test_default.py ..                                                 [100%]
+
+    =============================== warnings summary ===============================
+    tests/test_default.py::test_mongo_running_and_enabled[ansible://instance]
+      /home/darkon/DarkonGH_infra/ansible/venv/lib/python3.8/site-packages/paramiko/client.py:835: UserWarning: Unknown ssh-ed25519 host key for [127.0.0.1]:2201: b'267eb657bb8ffac7767e271183eb4cca'
+        warnings.warn(
+
+    -- Docs: https://docs.pytest.org/en/stable/warnings.html
+    ========================= 2 passed, 1 warning in 1.30s =========================
+Verifier completed successfully.
+--> Scenario: 'default'
+--> Action: 'cleanup'
+Skipping, cleanup playbook not configured.
+--> Scenario: 'default'
+--> Action: 'destroy'
+
+    PLAY [Destroy] *****************************************************************
+
+    TASK [Destroy molecule instance(s)] ********************************************
+    changed: [localhost] => (item=instance)
+
+    TASK [Populate instance config] ************************************************
+    ok: [localhost]
+
+    TASK [Dump instance config] ****************************************************
+    changed: [localhost]
+
+    PLAY RECAP *********************************************************************
+    localhost                  : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+--> Pruning extra files from scenario ephemeral directory
+(venv) darkon@darkonVM:~/DarkonGH_infra/ansible/roles/db (ansible-4)$
+```
+
+для настройки использовались версии:
+```
+ansible 2.8.0
+molecule, version 2.22
+Python 3.8.10
+testinfra 3.4.0
+python-vagrant 0.5.15
+```
+
+### Самостоятельное задание
+
+Написание теста к роли db, проверка прослушивания порта 27017.
+Для проверки используем модуль testinfra - class Socket(socketspec)
+
+Корректировка сборки образов пакером с учетом ролей. Устанавливаются только таски помеченные тегом. Путь к ролям передаются через переменную окружения. Эти изменения внесены в app.json и db.json
+Изменены плейбуки packer_db.yml и packer_app.yml и с учетом ролей db и app
+
+вызов сборки пакера
+```
+packer build -var-file=packer/variables.json packer/app.json
+
+packer build -var-file=packer/variables.json packer/db.json
 ```
