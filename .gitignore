@@ -14,3 +14,13 @@ inventory.py
 jdauphant.nginx
 vault.key
 work.log
+
+# Vagrant & molecule
+.vagrant/
+*.log
+*.pyc
+.molecule
+.cache
+.pytest_cache
+
+ansible/venv
